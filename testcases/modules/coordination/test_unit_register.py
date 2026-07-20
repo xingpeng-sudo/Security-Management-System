@@ -5,7 +5,7 @@
 """
 import allure
 import pytest
-
+'''验证CI'''
 from utils.assertions import AssertUtils
 from utils.attachments import attach_request_response, set_severity_from_priority
 from utils.logger import logger
