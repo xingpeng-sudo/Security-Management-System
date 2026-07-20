@@ -14,8 +14,6 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 jobs:
   test:
@@ -45,79 +43,65 @@ jobs:
           pytest -v --alluredir=reports/allure-results --clean-alluredir
         }
 
-    - name: Upload Test Logs
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: test-logs
-        path: logs/
-        retention-days: 7
-
-  report:
-    name: Generate Allure Report
-    runs-on: self-hosted
-    needs: test
-    if: always()
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Download test results
-      uses: actions/download-artifact@v4
-      with:
-        name: test-logs
-        path: logs/
-
-    - name: Restore previous allure history
-      uses: actions/checkout@v4
-      with:
-        ref: gh-pages
-        path: gh-pages
-      continue-on-error: true
-
     - name: Generate Allure Report
       if: always()
       shell: powershell
       run: |
         $allureCmd = "D:\allure-2.24.1\bin\allure.bat"
-
-        # 检查 allure-results 是否存在
-        if ((Test-Path reports/allure-results) -and (Get-ChildItem reports/allure-results/*.json -ErrorAction SilentlyContinue)) {
-          Write-Host "Found allure-results, generating report..."
-
-          # 恢复历史趋势数据
-          if (Test-Path gh-pages/history) {
-            Write-Host "Restoring allure history..."
-            Copy-Item gh-pages/history reports/allure-results/ -Recurse -Force -ErrorAction SilentlyContinue
+        if (Test-Path reports/allure-results) {
+          # 恢复历史趋势
+          if (Test-Path allure-history/history) {
+            Copy-Item allure-history/history reports/allure-results/ -Recurse -Force -ErrorAction SilentlyContinue
           }
-
-          # 生成报告
           & $allureCmd generate reports/allure-results -o allure-report --clean
-
-          if ($LASTEXITCODE -eq 0) {
-            Write-Host "Allure report generated successfully"
-          } else {
-            Write-Host "Allure generate failed with code $LASTEXITCODE"
-          }
+          Write-Host "Allure report generated"
         } else {
-          Write-Host "No allure-results found, creating empty report dir"
-          New-Item -ItemType Directory -Force -Path allure-report
+          Write-Host "No allure-results found"
         }
 
     - name: Deploy to GitHub Pages
       if: always()
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_branch: gh-pages
-        publish_dir: allure-report
-        keep_files: true
-
-    - name: Upload report artifact
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: allure-report
-        path: allure-report/
-        retention-days: 30
+      shell: powershell
+      run: |
+        # 初始化 gh-pages 分支（如果不存在）
+        $repo = "${{ github.repository }}"
+        $token = "${{ secrets.GITHUB_TOKEN }}"
+        
+        # 配置 git
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        
+        # 克隆 gh-pages 分支（如果存在）
+        git fetch origin gh-pages 2>$null
+        if ($LASTEXITCODE -eq 0) {
+          git checkout gh-pages
+        } else {
+          git checkout --orphan gh-pages
+          git rm -rf . 2>$null
+        }
+        
+        # 复制报告内容
+        if (Test-Path allure-report) {
+          # 保留 history 目录
+          if (Test-Path allure-report/history) {
+            New-Item -ItemType Directory -Force -Path allure-history | Out-Null
+            Copy-Item allure-report/history allure-history/ -Recurse -Force -ErrorAction SilentlyContinue
+          }
+          
+          # 清空当前分支内容，复制报告
+          Get-ChildItem -Force | Where-Object { $_.Name -ne ".git" } | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+          Copy-Item allure-report/* . -Recurse -Force
+          
+          # 添加 .nojekyll 避免 GitHub Pages 忽略 _ 开头的文件
+          New-Item -ItemType File -Path .nojekyll -Force | Out-Null
+          
+          git add .
+          git commit -m "Update Allure report [skip ci]" 2>$null
+          git push origin gh-pages 2>&1
+          Write-Host "Report deployed to gh-pages"
+        } else {
+          Write-Host "No report to deploy"
+        }
+        
+        # 切回 main 分支
+        git checkout main 2>$null
