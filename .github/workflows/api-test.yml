@@ -38,9 +38,9 @@ jobs:
       run: |
         $module = "${{ github.event.inputs.test_module }}"
         if ($module) {
-          pytest "testcases/modules/$module/" -v --alluredir=reports/allure-results --clean-alluredir
+          python -m pytest "testcases/modules/$module/" -v --alluredir=reports/allure-results --clean-alluredir
         } else {
-          pytest -v --alluredir=reports/allure-results --clean-alluredir
+          python -m pytest -v --alluredir=reports/allure-results --clean-alluredir
         }
 
     - name: Generate Allure Report
