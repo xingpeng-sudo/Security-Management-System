@@ -1,0 +1,5 @@
+# 生产环境配置（谨慎使用，地址请通过 .env 或环境变量覆盖）
+base_url: "http://localhost:8080"
+timeout: 30
+retry_times: 1
+log_level: "WARNING"

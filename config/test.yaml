@@ -1,0 +1,5 @@
+# 测试环境配置
+base_url: "http://10.2.254.243"
+timeout: 30
+retry_times: 3
+log_level: "INFO"

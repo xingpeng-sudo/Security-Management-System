@@ -1,0 +1,259 @@
+{
+  "defaults": {
+    "expected": {
+      "http_status": 200,
+      "code": 500
+    }
+  },
+  "test_cases": [
+    {
+      "case_id": "TC_REG_001",
+      "case_name": "正常注册-完整必填字段",
+      "description": "使用全部必填字段且数据合法，验证注册成功并返回account和password",
+      "priority": "P0",
+      "data": {
+        "supplierName": "测试公司_正常_{{timestamp_short}}",
+        "legalRepresentative": "{{name}}",
+        "businessLicenseNo": "91110000MA00{{random}}",
+        "blIssuingAuthority": "北京市市场监督管理局",
+        "blStartDate": "2024-01-01",
+        "blEndDate": "2034-01-01",
+        "contactsName": "{{name}}",
+        "contactsPhone": "{{mobile}}",
+        "bussinessType": "short_jx",
+        "isSelfAccess": "0"
+      },
+      "expected": {
+        "code": 0,
+        "msg_contains": "通过审核"
+      }
+    },
+    {
+      "case_id": "TC_REG_002",
+      "case_name": "正常注册-15位营业执照号",
+      "description": "使用15位注册号格式的营业执照号，验证注册成功",
+      "priority": "P1",
+      "data": {
+        "supplierName": "测试公司_15位执照_{{timestamp_short}}",
+        "legalRepresentative": "{{name}}",
+        "businessLicenseNo": "11000000{{random_short}}",
+        "blIssuingAuthority": "上海市市场监督管理局",
+        "blStartDate": "2023-06-15",
+        "blEndDate": "2033-06-14",
+        "contactsName": "{{name}}",
+        "contactsPhone": "{{mobile}}",
+        "bussinessType": "short_jx",
+        "isSelfAccess": "0"
+      },
+      "expected": {
+        "code": 0,
+        "msg_contains": "通过审核"
+      }
+    },
+    {
+      "case_id": "TC_REG_003",
+      "case_name": "异常注册-缺少公司名称",
+      "description": "缺少必填字段supplierName，验证注册失败",
+      "priority": "P1",
+      "data": {
+        "legalRepresentative": "{{name}}",
+        "businessLicenseNo": "91110000MA01{{random}}",
+        "blIssuingAuthority": "天津市市场监督管理局",
+        "blStartDate": "2024-03-01",
+        "blEndDate": "2034-02-28",
+        "contactsName": "{{name}}",
+        "contactsPhone": "{{mobile}}",
+        "bussinessType": "short_jx",
+        "isSelfAccess": "0"
+      },
+      "expected": {
+        "code": 500
+      }
+    },
+    {
+      "case_id": "TC_REG_004",
+      "case_name": "异常注册-缺少法定代表人",
+      "description": "缺少必填字段legalRepresentative，验证注册失败",
+      "priority": "P1",
+      "data": {
+        "supplierName": "测试公司_缺法人_{{timestamp_short}}",
+        "businessLicenseNo": "91110000MA02{{random}}",
+        "blIssuingAuthority": "重庆市市场监督管理局",
+        "blStartDate": "2024-05-10",
+        "blEndDate": "2034-05-09",
+        "contactsName": "{{name}}",
+        "contactsPhone": "{{mobile}}",
+        "bussinessType": "short_jx",
+        "isSelfAccess": "0"
+      },
+      "expected": {
+        "code": 500
+      }
+    },
+    {
+      "case_id": "TC_REG_005",
+      "case_name": "异常注册-缺少营业执照号",
+      "description": "缺少必填字段businessLicenseNo，验证注册失败",
+      "priority": "P1",
+      "data": {
+        "supplierName": "测试公司_缺执照号_{{timestamp_short}}",
+        "legalRepresentative": "{{name}}",
+        "blIssuingAuthority": "广州市市场监督管理局",
+        "blStartDate": "2023-01-20",
+        "blEndDate": "2033-01-19",
+        "contactsName": "{{name}}",
+        "contactsPhone": "{{mobile}}",
+        "bussinessType": "short_jx",
+        "isSelfAccess": "0"
+      },
+      "expected": {
+        "code": 500
+      }
+    },
+    {
+      "case_id": "TC_REG_006",
+      "case_name": "异常注册-营业执照号长度不合法(10位)",
+      "description": "营业执照号既非15位也非18位，验证注册失败",
+      "priority": "P2",
+      "data": {
+        "supplierName": "测试公司_执照短_{{timestamp_short}}",
+        "legalRepresentative": "{{name}}",
+        "businessLicenseNo": "1234567890",
+        "blIssuingAuthority": "深圳市市场监督管理局",
+        "blStartDate": "2024-07-01",
+        "blEndDate": "2034-06-30",
+        "contactsName": "{{name}}",
+        "contactsPhone": "{{mobile}}",
+        "bussinessType": "short_jx",
+        "isSelfAccess": "0"
+      },
+      "expected": {
+        "code": 500
+      }
+    },
+    {
+      "case_id": "TC_REG_007",
+      "case_name": "异常注册-无效电话格式(过短)",
+      "description": "联系人电话5位数字，不符合电话号格式，验证注册失败",
+      "priority": "P2",
+      "data": {
+        "supplierName": "测试公司_电话短_{{timestamp_short}}",
+        "legalRepresentative": "{{name}}",
+        "businessLicenseNo": "91110000MA03{{random}}",
+        "blIssuingAuthority": "武汉市市场监督管理局",
+        "blStartDate": "2024-02-14",
+        "blEndDate": "2034-02-13",
+        "contactsName": "{{name}}",
+        "contactsPhone": "12345",
+        "bussinessType": "short_jx",
+        "isSelfAccess": "0"
+      },
+      "expected": {
+        "code": 500
+      }
+    },
+    {
+      "case_id": "TC_REG_008",
+      "case_name": "异常注册-无效电话格式(含字母)",
+      "description": "联系人电话包含非数字字符，验证注册失败",
+      "priority": "P2",
+      "data": {
+        "supplierName": "测试公司_电话含字母_{{timestamp_short}}",
+        "legalRepresentative": "{{name}}",
+        "businessLicenseNo": "91110000MA04{{random}}",
+        "blIssuingAuthority": "成都市市场监督管理局",
+        "blStartDate": "2023-09-01",
+        "blEndDate": "2033-08-31",
+        "contactsName": "{{name}}",
+        "contactsPhone": "13800abc000",
+        "bussinessType": "short_jx",
+        "isSelfAccess": "0"
+      },
+      "expected": {
+        "code": 500
+      }
+    },
+    {
+      "case_id": "TC_REG_009",
+      "case_name": "异常注册-缺少协力种类",
+      "description": "缺少必填字段bussinessType，验证注册失败",
+      "priority": "P1",
+      "data": {
+        "supplierName": "测试公司_缺协力种类_{{timestamp_short}}",
+        "legalRepresentative": "{{name}}",
+        "businessLicenseNo": "91110000MA05{{random}}",
+        "blIssuingAuthority": "杭州市市场监督管理局",
+        "blStartDate": "2024-04-01",
+        "blEndDate": "2034-03-31",
+        "contactsName": "{{name}}",
+        "contactsPhone": "{{mobile}}",
+        "isSelfAccess": "0"
+      },
+      "expected": {
+        "code": 500
+      }
+    },
+    {
+      "case_id": "TC_REG_010",
+      "case_name": "异常注册-公司名称为空字符串",
+      "description": "supplierName传空字符串，验证注册失败",
+      "priority": "P1",
+      "data": {
+        "supplierName": "",
+        "legalRepresentative": "{{name}}",
+        "businessLicenseNo": "91110000MA06{{random}}",
+        "blIssuingAuthority": "南京市市场监督管理局",
+        "blStartDate": "2023-11-15",
+        "blEndDate": "2033-11-14",
+        "contactsName": "{{name}}",
+        "contactsPhone": "{{mobile}}",
+        "bussinessType": "short_jx",
+        "isSelfAccess": "0"
+      },
+      "expected": {
+        "code": 500
+      }
+    },
+    {
+      "case_id": "TC_REG_011",
+      "case_name": "异常注册-缺少联系人姓名",
+      "description": "缺少必填字段contactsName，验证注册失败",
+      "priority": "P1",
+      "data": {
+        "supplierName": "测试公司_缺联系人_{{timestamp_short}}",
+        "legalRepresentative": "{{name}}",
+        "businessLicenseNo": "91110000MA07{{random}}",
+        "blIssuingAuthority": "西安市市场监督管理局",
+        "blStartDate": "2024-06-01",
+        "blEndDate": "2034-05-31",
+        "contactsPhone": "{{mobile}}",
+        "bussinessType": "short_jx",
+        "isSelfAccess": "0"
+      },
+      "expected": {
+        "code": 500
+      }
+    },
+    {
+      "case_id": "TC_REG_012",
+      "case_name": "异常注册-SQL注入",
+      "description": "公司名称包含SQL注入字符，验证系统安全处理",
+      "priority": "P2",
+      "data": {
+        "supplierName": "测试公司' OR '1'='1_{{timestamp_short}}",
+        "legalRepresentative": "{{name}}",
+        "businessLicenseNo": "91110000MA08{{random}}",
+        "blIssuingAuthority": "青岛市市场监督管理局",
+        "blStartDate": "2023-03-20",
+        "blEndDate": "2033-03-19",
+        "contactsName": "{{name}}",
+        "contactsPhone": "{{mobile}}",
+        "bussinessType": "short_jx",
+        "isSelfAccess": "0"
+      },
+      "expected": {
+        "code": 500
+      }
+    }
+  ]
+}

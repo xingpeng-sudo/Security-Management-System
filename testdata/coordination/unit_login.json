@@ -1,0 +1,66 @@
+{
+  "defaults": {
+    "expected": {
+      "http_status": 200,
+      "format": "login",
+      "success": false,
+      "status": "500"
+    }
+  },
+  "test_cases": [
+    {
+      "case_id": "TC_LOGIN_002",
+      "case_name": "异常登录-错误密码",
+      "description": "使用正确的账号但错误密码登录，验证登录失败",
+      "priority": "P1",
+      "data": {
+        "account": "WX0000",
+        "password": "wrong_password"
+      },
+      "expected": {
+        "success": false,
+        "msg_contains": "密码"
+      }
+    },
+    {
+      "case_id": "TC_LOGIN_003",
+      "case_name": "异常登录-不存在的账号",
+      "description": "使用不存在的账号登录，验证登录失败",
+      "priority": "P1",
+      "data": {
+        "account": "WX9999",
+        "password": "any_password"
+      },
+      "expected": {
+        "success": false,
+        "msg_contains": "不存在"
+      }
+    },
+    {
+      "case_id": "TC_LOGIN_004",
+      "case_name": "异常登录-空密码",
+      "description": "密码为空字符串，验证登录失败",
+      "priority": "P2",
+      "data": {
+        "account": "WX0001",
+        "password": ""
+      },
+      "expected": {
+        "success": false
+      }
+    },
+    {
+      "case_id": "TC_LOGIN_005",
+      "case_name": "异常登录-空账号",
+      "description": "账号为空字符串，验证登录失败",
+      "priority": "P2",
+      "data": {
+        "account": "",
+        "password": "test123"
+      },
+      "expected": {
+        "success": false
+      }
+    }
+  ]
+}

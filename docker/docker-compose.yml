@@ -1,0 +1,38 @@
+services:
+  api-test:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: security-api-test
+    environment:
+      - TEST_ENV=${TEST_ENV:-test}
+      - BASE_URL=${BASE_URL:-http://10.2.254.243}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    volumes:
+      - ../reports:/app/reports
+      - ../logs:/app/logs
+    networks:
+      - test-network
+    # 覆盖默认入口，跑指定模块示例：
+    # command: ["-m", "coordination"]
+    # command: ["-m", "smoke", "testcases/"]
+
+  allure-report:
+    # Allure 官方 Docker 镜像
+    image: allureframework/allure-docker
+    container_name: allure-report
+    ports:
+      - "5050:5050"
+    environment:
+      - CHECK_RESULTS_EVERY_SECONDS=10
+      - KEEP_HISTORY=1
+    volumes:
+      - ../reports/allure-results:/app/allure-results
+    networks:
+      - test-network
+    depends_on:
+      - api-test
+
+networks:
+  test-network:
+    driver: bridge
