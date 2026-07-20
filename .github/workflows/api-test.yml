@@ -1,4 +1,4 @@
-name: API Automation Test
+name: API Automation Test (Self-Hosted)
 
 on:
   push:
@@ -12,58 +12,112 @@ on:
         required: false
         default: ''
 
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
-  api-test:
-    runs-on: ubuntu-latest
+  test:
+    name: Run API Tests
+    runs-on: self-hosted
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          cache: 'pip'
+    - name: Set up Python
+      run: |
+        python --version
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+    - name: Run API Tests
+      shell: powershell
+      env:
+        TEST_ENV: test
+        BASE_URL: ${{ secrets.BASE_URL }}
+      run: |
+        $module = "${{ github.event.inputs.test_module }}"
+        if ($module) {
+          pytest "testcases/modules/$module/" -v --alluredir=reports/allure-results --clean-alluredir
+        } else {
+          pytest -v --alluredir=reports/allure-results --clean-alluredir
+        }
 
-      - name: Install Allure
-        run: |
-          npm install -g allure-commandline
+    - name: Upload Test Logs
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-logs
+        path: logs/
+        retention-days: 7
 
-      - name: Run API Tests
-        env:
-          TEST_ENV: test
-          BASE_URL: ${{ secrets.BASE_URL }}
-        run: |
-          if [ -n "${{ github.event.inputs.test_module }}" ]; then
-            pytest testcases/modules/${{ github.event.inputs.test_module }}/ -v \
-              --alluredir=reports/allure-results --clean-alluredir
-          else
-            pytest -v --alluredir=reports/allure-results --clean-alluredir
-          fi
+  report:
+    name: Generate Allure Report
+    runs-on: self-hosted
+    needs: test
+    if: always()
 
-      - name: Generate Allure Report
-        if: always()
-        run: |
-          allure generate reports/allure-results -o reports/allure-report --clean
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Upload Allure Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-report
-          path: reports/allure-report/
-          retention-days: 30
+    - name: Download test results
+      uses: actions/download-artifact@v4
+      with:
+        name: test-logs
+        path: logs/
 
-      - name: Upload Test Logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-logs
-          path: logs/
-          retention-days: 7
+    - name: Restore previous allure history
+      uses: actions/checkout@v4
+      with:
+        ref: gh-pages
+        path: gh-pages
+      continue-on-error: true
+
+    - name: Generate Allure Report
+      if: always()
+      shell: powershell
+      run: |
+        $allureCmd = "D:\allure-2.24.1\bin\allure.bat"
+
+        # 检查 allure-results 是否存在
+        if ((Test-Path reports/allure-results) -and (Get-ChildItem reports/allure-results/*.json -ErrorAction SilentlyContinue)) {
+          Write-Host "Found allure-results, generating report..."
+
+          # 恢复历史趋势数据
+          if (Test-Path gh-pages/history) {
+            Write-Host "Restoring allure history..."
+            Copy-Item gh-pages/history reports/allure-results/ -Recurse -Force -ErrorAction SilentlyContinue
+          }
+
+          # 生成报告
+          & $allureCmd generate reports/allure-results -o allure-report --clean
+
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "Allure report generated successfully"
+          } else {
+            Write-Host "Allure generate failed with code $LASTEXITCODE"
+          }
+        } else {
+          Write-Host "No allure-results found, creating empty report dir"
+          New-Item -ItemType Directory -Force -Path allure-report
+        }
+
+    - name: Deploy to GitHub Pages
+      if: always()
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_branch: gh-pages
+        publish_dir: allure-report
+        keep_files: true
+
+    - name: Upload report artifact
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: allure-report
+        path: allure-report/
+        retention-days: 30
