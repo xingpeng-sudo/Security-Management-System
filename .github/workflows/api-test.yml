@@ -27,6 +27,7 @@ jobs:
     - name: Set up Python
       shell: pwsh
       run: |
+        $ErrorActionPreference = 'Continue'
         python --version
         python -m pip install --upgrade pip
         pip install -r requirements.txt
@@ -37,27 +38,26 @@ jobs:
         TEST_ENV: test
         BASE_URL: ${{ secrets.BASE_URL }}
       run: |
+        $ErrorActionPreference = 'Continue'
         $module = "${{ github.event.inputs.test_module }}"
         if ($module) {
-          python -m pytest "testcases/modules/$module/" -v --alluredir=reports/allure-results --clean-alluredir
+          python -m pytest "testcases/modules/$module/" -v --alluredir=reports/allure-results --clean-alluredir 2>&1
         } else {
-          python -m pytest -v --alluredir=reports/allure-results --clean-alluredir
+          python -m pytest -v --alluredir=reports/allure-results --clean-alluredir 2>&1
         }
-        # 测试失败不阻塞报告生成
         Write-Host "pytest exit code: $LASTEXITCODE"
-        exit 0
 
     - name: Generate Allure Report
       if: always()
       shell: pwsh
       run: |
+        $ErrorActionPreference = 'Continue'
         $allureCmd = "D:\allure-2.24.1\bin\allure.bat"
         if (Test-Path reports/allure-results) {
-          # 恢复历史趋势
           if (Test-Path allure-history/history) {
             Copy-Item allure-history/history reports/allure-results/ -Recurse -Force -ErrorAction SilentlyContinue
           }
-          & $allureCmd generate reports/allure-results -o allure-report --clean
+          & $allureCmd generate reports/allure-results -o allure-report --clean 2>&1
           Write-Host "Allure report generated"
         } else {
           Write-Host "No allure-results found"
@@ -67,48 +67,46 @@ jobs:
       if: always()
       shell: pwsh
       run: |
+        $ErrorActionPreference = 'Continue'
         if (-not (Test-Path allure-report)) {
           Write-Host "No report to deploy"
           exit 0
         }
 
-        # 配置 git
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
 
-        # 保留 history 目录用于下次运行
+        # 保留 history
         if (Test-Path allure-report/history) {
           New-Item -ItemType Directory -Force -Path allure-history | Out-Null
           Copy-Item allure-report/history allure-history/ -Recurse -Force -ErrorAction SilentlyContinue
         }
 
-        # 创建/切换到 gh-pages 分支
-        git fetch origin gh-pages 2>$null
+        # 切换到 gh-pages
+        git fetch origin gh-pages 2>&1 | Out-Null
         if ($LASTEXITCODE -eq 0) {
-          git stash
-          git checkout gh-pages
-          # 清空旧内容
+          git stash 2>&1 | Out-Null
+          git checkout gh-pages 2>&1
           Get-ChildItem -Force | Where-Object { $_.Name -ne ".git" } | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
         } else {
-          git checkout --orphan gh-pages
-          git rm -rf . 2>$null
+          git checkout --orphan gh-pages 2>&1
+          git rm -rf . 2>&1 | Out-Null
         }
 
         # 复制报告
         Copy-Item allure-report/* . -Recurse -Force
         New-Item -ItemType File -Path .nojekyll -Force | Out-Null
 
-        # 提交并推送
-        git add -A
-        $commitResult = git commit -m "Update Allure report [skip ci]" 2>&1
-        Write-Host "Commit: $commitResult"
+        # 提交
+        git add -A 2>&1
+        git commit -m "Update Allure report [skip ci]" 2>&1
+        Write-Host "Commit done"
 
-        # 使用 GITHUB_TOKEN 推送
+        # 用 GITHUB_TOKEN 推送
         $repo = "${{ github.repository }}"
         $token = "${{ secrets.GITHUB_TOKEN }}"
         $remoteUrl = "https://x-access-token:$token@github.com/$repo.git"
         git push $remoteUrl gh-pages 2>&1
         Write-Host "Push exit code: $LASTEXITCODE"
 
-        # 切回 main
-        git checkout main 2>$null
+        git checkout main 2>&1 | Out-Null
