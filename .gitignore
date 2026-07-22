@@ -13,6 +13,8 @@ build/
 # 测试报告
 reports/allure-results/
 reports/allure-report/
+allure-history/
+allure-report/
 
 # pytest 缓存
 .pytest_cache/

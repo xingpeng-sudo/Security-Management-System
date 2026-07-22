@@ -1,0 +1,219 @@
+# Security Management System CI
+# 参考 Steelworks CI 架构：lint -> test -> report -> notify
+# Self-Hosted Runner (Windows) | 触发: push/PR 到 main + 手动
+
+name: SMS CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      test_module:
+        description: '测试模块 (空=全部, 如: coordination)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  # ========== 1. 代码质量检查 ==========
+  lint:
+    name: Code Quality Check
+    runs-on: self-hosted
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install lint tools
+      shell: pwsh
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 black isort
+
+    - name: Check code format with black
+      shell: pwsh
+      run: black --check --diff api testcases utils config conftest.py
+      continue-on-error: true
+
+    - name: Check import order with isort
+      shell: pwsh
+      run: isort --check-only --diff api testcases utils config conftest.py
+      continue-on-error: true
+
+    - name: Lint with flake8
+      shell: pwsh
+      run: |
+        # 只检查严重错误（语法错误、未定义变量等），风格问题不阻断CI
+        flake8 api testcases utils config conftest.py --select=E9,F63,F7,F82 --show-source --statistics
+
+  # ========== 2. 测试执行 ==========
+  test:
+    name: Run API Tests
+    runs-on: self-hosted
+    needs: lint
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      shell: pwsh
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run API Tests
+      shell: pwsh
+      env:
+        TEST_ENV: test
+        BASE_URL: ${{ secrets.BASE_URL }}
+      run: |
+        $ErrorActionPreference = 'Continue'
+        $module = "${{ github.event.inputs.test_module }}"
+        if ($module) {
+          python -m pytest "testcases/modules/$module/" -v --alluredir=reports/allure-results --clean-alluredir 2>&1
+        } else {
+          python -m pytest -v --alluredir=reports/allure-results --clean-alluredir 2>&1
+        }
+        $testExit = $LASTEXITCODE
+        Write-Host "pytest exit code: $testExit"
+        # 测试失败不阻断后续步骤，让报告照样生成
+        if ($testExit -ne 0) {
+          Write-Host "::warning::Tests failed (exit=$testExit), but report generation will continue."
+        }
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: reports/allure-results/
+        retention-days: 7
+
+  # ========== 3. 生成 & 部署 Allure 报告 ==========
+  report:
+    name: Generate Allure Report
+    runs-on: self-hosted
+    needs: test
+    if: always()
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Download test results
+      uses: actions/download-artifact@v4
+      with:
+        name: test-results
+        path: reports/allure-results
+
+    - name: Check test results
+      shell: pwsh
+      run: |
+        $resultsDir = "reports/allure-results"
+        if ((Test-Path $resultsDir) -and (Get-ChildItem "$resultsDir\*.json" -ErrorAction SilentlyContinue)) {
+          $count = @(Get-ChildItem "$resultsDir\*.json").Count
+          Write-Host "Found $count JSON result files"
+        } else {
+          Write-Host "::warning::No allure-results found, skipping report generation"
+          exit 0
+        }
+
+    - name: Generate Allure Report
+      shell: pwsh
+      run: |
+        $allureCmd = "D:\allure-2.24.1\bin\allure.bat"
+        if (-not (Test-Path $allureCmd)) {
+          Write-Host "::error::Allure not found at $allureCmd"
+          exit 1
+        }
+
+        # 保留历史趋势
+        if (Test-Path allure-history/history) {
+          Copy-Item allure-history/history reports/allure-results/ -Recurse -Force -ErrorAction SilentlyContinue
+        }
+
+        & $allureCmd generate reports/allure-results -o allure-report --clean 2>&1
+        if ($LASTEXITCODE -ne 0) {
+          Write-Host "::warning::Allure generate failed (exit=$LASTEXITCODE)"
+          exit 0
+        }
+        Write-Host "Allure report generated successfully"
+
+        # 保存历史供下次构建使用
+        New-Item -ItemType Directory -Force -Path allure-history | Out-Null
+        if (Test-Path allure-report/history) {
+          Copy-Item allure-report/history allure-history/ -Recurse -Force -ErrorAction SilentlyContinue
+        }
+
+    - name: Deploy to GitHub Pages
+      shell: pwsh
+      run: |
+        if (-not (Test-Path allure-report)) {
+          Write-Host "No report to deploy"
+          exit 0
+        }
+
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+
+        # 切换到 gh-pages 分支
+        git fetch origin gh-pages 2>&1 | Out-Null
+        if ($LASTEXITCODE -eq 0) {
+          git stash 2>&1 | Out-Null
+          git checkout gh-pages 2>&1
+          Get-ChildItem -Force | Where-Object { $_.Name -ne ".git" } | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+        } else {
+          git checkout --orphan gh-pages 2>&1
+          git rm -rf . 2>&1 | Out-Null
+        }
+
+        # 复制报告内容
+        Copy-Item allure-report/* . -Recurse -Force
+        New-Item -ItemType File -Path .nojekyll -Force | Out-Null
+
+        # 提交并推送
+        git add -A 2>&1
+        git commit -m "Update Allure report [skip ci]" 2>&1 | Out-Null
+
+        $repo = "${{ github.repository }}"
+        $token = "${{ secrets.GITHUB_TOKEN }}"
+        $remoteUrl = "https://x-access-token:$token@github.com/$repo.git"
+        git push $remoteUrl gh-pages 2>&1
+        Write-Host "Push exit code: $LASTEXITCODE"
+
+        git checkout main 2>&1 | Out-Null
+
+    - name: Upload report artifact
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: allure-report
+        path: allure-report/
+        retention-days: 14
+
+  # ========== 4. 结果通知 ==========
+  notify:
+    name: Notify Result
+    runs-on: self-hosted
+    needs: [lint, test]
+    if: always()
+
+    steps:
+    - name: Summary
+      shell: pwsh
+      run: |
+        Write-Host "========== CI Summary =========="
+        Write-Host "Lint:  ${{ needs.lint.result }}"
+        Write-Host "Test:  ${{ needs.test.result }}"
+        Write-Host "================================"
+        if ("${{ needs.test.result }}" -eq "failure") {
+          Write-Host "::error::Tests FAILED! Check: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        } elseif ("${{ needs.test.result }}" -eq "success") {
+          Write-Host "::notice::All tests PASSED!"
+        }

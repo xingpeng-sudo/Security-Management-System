@@ -6,3 +6,8 @@ faker>=19.0.0
 loguru>=0.7.0
 python-dotenv>=1.0.0
 pytest-xdist>=3.5.0
+
+# Lint tools (CI用)
+flake8>=7.0.0
+black>=24.0.0
+isort>=5.13.0
