@@ -1,0 +1,12 @@
+[32m2026-07-24 15:31:53[0m | [1mINFO    [0m | [36mmodules.safety.test_supplier_list[0m:[36mtest_supplier_list[0m:[36m27[0m | [1m执行测试用例: TC_SUP_009 - 按联系人电话过滤 [P2][0m
+[32m2026-07-24 15:31:53[0m | [1mINFO    [0m | [36mapi.modules.safety.safety_api[0m:[36mget_supplier_list[0m:[36m78[0m | [1m[API] 查询相关方企业列表: {'pageNum': 1, 'pageSize': 20}[0m
+[32m2026-07-24 15:31:53[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m119[0m | [1m[Request] POST http://10.2.254.243/aqserver/zr/zrSupplier/list | Attempt: 1/3[0m
+[32m2026-07-24 15:31:53[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m129[0m | [1m[Response] 200 | Time: 0.007s[0m
+[32m2026-07-24 15:31:53[0m | [1mINFO    [0m | [36mutils.assertions[0m:[36massert_list_success[0m:[36m238[0m | [1m[Assert] 列表查询成功: total=1124, rows数量=20[0m
+[32m2026-07-24 15:31:53[0m | [1mINFO    [0m | [36mmodules.safety.test_supplier_list[0m:[36m_run_filter_test[0m:[36m78[0m | [1m[Test] 从baseline取值: contactsPhone=1[0m
+[32m2026-07-24 15:31:53[0m | [1mINFO    [0m | [36mapi.modules.safety.safety_api[0m:[36mget_supplier_list[0m:[36m78[0m | [1m[API] 查询相关方企业列表: {'contactsPhone': '1', 'pageNum': 1, 'pageSize': 20}[0m
+[32m2026-07-24 15:31:53[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m119[0m | [1m[Request] POST http://10.2.254.243/aqserver/zr/zrSupplier/list | Attempt: 1/3[0m
+[32m2026-07-24 15:31:53[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m129[0m | [1m[Response] 200 | Time: 0.008s[0m
+[32m2026-07-24 15:31:53[0m | [1mINFO    [0m | [36mutils.assertions[0m:[36massert_list_success[0m:[36m238[0m | [1m[Assert] 列表查询成功: total=2, rows数量=2[0m
+[32m2026-07-24 15:31:53[0m | [1mINFO    [0m | [36mutils.assertions[0m:[36massert_list_filtered[0m:[36m258[0m | [1m[Assert] 列表过滤验证通过: field=contactsPhone, value=1, rows数量=2[0m
+[32m2026-07-24 15:31:53[0m | [1mINFO    [0m | [36mmodules.safety.test_supplier_list[0m:[36mtest_supplier_list[0m:[36m52[0m | [1m测试用例执行完成: TC_SUP_009 - 按联系人电话过滤[0m
