@@ -1,0 +1,56 @@
+[32m2026-07-24 10:17:13[0m | [1mINFO    [0m | [36mmodules.coordination.test_unit_register[0m:[36mtest_unit_register[0m:[36m28[0m | [1m执行测试用例: TC_REG_004 - 异常注册-缺少法定代表人 [P1][0m
+[32m2026-07-24 10:17:13[0m | [1mINFO    [0m | [36mapi.modules.coordination.unit_api[0m:[36mregister[0m:[36m42[0m | [1m[API] 注册相关方单位: 测试公司_缺法人_859433[0m
+[32m2026-07-24 10:17:13[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m119[0m | [1m[Request] POST http://10.2.254.243/app/xl/unit/register | Attempt: 1/3[0m
+[32m2026-07-24 10:17:13[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m129[0m | [1m[Response] 200 | Time: 0.014s[0m
+[32m2026-07-24 10:17:13[0m | [31m[1mERROR   [0m | [36mconftest[0m:[36mpytest_runtest_makereport[0m:[36m62[0m | [31m[1m测试失败: testcases/modules/coordination/test_unit_register.py::TestUnitRegister::test_unit_register[TC_REG_004][0m
+[32m2026-07-24 10:17:13[0m | [31m[1mERROR   [0m | [36mconftest[0m:[36mpytest_runtest_makereport[0m:[36m63[0m | [31m[1m失败原因: self = <modules.coordination.test_unit_register.TestUnitRegister object at 0x0000026C0FD4F5C0>
+unit_api = <api.modules.coordination.unit_api.UnitAPI object at 0x0000026C0FDA9E80>
+tc = TestCase(case_id='TC_REG_004', case_name='异常注册-缺少法定代表人', description='缺少必填字段legalRepresentative，验证注册失败', priority='P1'...ctsPhone': '{{mobile}}', 'bussinessType': 'short_jx', 'isSelfAccess': '0'}, expected={'http_status': 200, 'code': 500})
+
+    @allure.title("{tc.case_id} {tc.case_name}")
+    @allure.description("{tc.description}")
+    @load_parametrize('coordination/unit_register.json')
+    def test_unit_register(self, unit_api, tc):
+        """相关方单位注册 - 参数化测试"""
+        set_severity_from_priority(tc.priority)
+        logger.info(f"执行测试用例: {tc.case_id} - {tc.case_name} [{tc.priority}]")
+    
+        processed_data = process_template(tc.data)
+        response = unit_api.register(data=processed_data)
+        attach_request_response(processed_data, response)
+    
+>       AssertUtils.assert_by_expected(response, tc.expected)
+
+testcases\modules\coordination\test_unit_register.py:34: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+utils\assertions.py:253: in assert_by_expected
+    cls.assert_business_fail(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+response = <Response [200]>, expected_code = 500, expected_msg = None
+msg_mode = 'contains'
+
+    @staticmethod
+    def assert_business_fail(
+        response: Response,
+        expected_code: Optional[int] = None,
+        expected_msg: Optional[str] = None,
+        msg_mode: str = 'contains'
+    ):
+        """
+        断言业务失败
+    
+        适用于注册接口响应格式: {code: 500, msg: "..."}
+        """
+        resp_json = AssertUtils._parse_json(response)
+    
+        actual_code = resp_json.get('code')
+    
+        if expected_code is not None:
+>           assert actual_code == expected_code, (
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                f"业务码断言失败: 期望={expected_code}, 实际={actual_code}"
+            )
+E           AssertionError: 业务码断言失败: 期望=500, 实际=0
+
+utils\assertions.py:98: AssertionError[0m
