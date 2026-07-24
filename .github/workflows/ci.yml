@@ -76,15 +76,16 @@ jobs:
         $ErrorActionPreference = 'Continue'
         $module = "${{ github.event.inputs.test_module }}"
         if ($module) {
-          python -m pytest "testcases/modules/$module/" -v --alluredir=reports/allure-results --clean-alluredir 2>&1
+          cmd /c "python -m pytest testcases/modules/$module/ -v --alluredir=reports/allure-results --clean-alluredir 2>&1"
         } else {
-          python -m pytest -v --alluredir=reports/allure-results --clean-alluredir 2>&1
+          cmd /c "python -m pytest -v --alluredir=reports/allure-results --clean-alluredir 2>&1"
         }
         $testExit = $LASTEXITCODE
         Write-Host "pytest exit code: $testExit"
         # 测试失败不阻断后续步骤，让报告照样生成
         if ($testExit -ne 0) {
           Write-Host "::warning::Tests failed (exit=$testExit), but report generation will continue."
+          exit 0
         }
 
     - name: Upload test results
@@ -127,6 +128,7 @@ jobs:
     - name: Generate Allure Report
       shell: powershell
       run: |
+        $ErrorActionPreference = 'Continue'
         $allureCmd = "D:\allure-2.24.1\bin\allure.bat"
         if (-not (Test-Path $allureCmd)) {
           Write-Host "::error::Allure not found at $allureCmd"
@@ -138,7 +140,8 @@ jobs:
           Copy-Item allure-history/history reports/allure-results/ -Recurse -Force -ErrorAction SilentlyContinue
         }
 
-        & $allureCmd generate reports/allure-results -o allure-report --clean 2>&1
+        # 用 cmd /c 调用 allure，避免 PS 5.1 把 stderr 当错误
+        cmd /c ""$allureCmd" generate reports/allure-results -o allure-report --clean"
         if ($LASTEXITCODE -ne 0) {
           Write-Host "::warning::Allure generate failed (exit=$LASTEXITCODE)"
           exit 0
@@ -154,6 +157,7 @@ jobs:
     - name: Deploy to GitHub Pages
       shell: powershell
       run: |
+        $ErrorActionPreference = 'Continue'
         if (-not (Test-Path allure-report)) {
           Write-Host "No report to deploy"
           exit 0
@@ -163,13 +167,13 @@ jobs:
         git config user.email "github-actions[bot]@users.noreply.github.com"
 
         # 切换到 gh-pages 分支
-        git fetch origin gh-pages 2>&1 | Out-Null
+        $fetchResult = git fetch origin gh-pages 2>&1
         if ($LASTEXITCODE -eq 0) {
           git stash 2>&1 | Out-Null
-          git checkout gh-pages 2>&1
+          git checkout gh-pages 2>&1 | Out-Null
           Get-ChildItem -Force | Where-Object { $_.Name -ne ".git" } | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
         } else {
-          git checkout --orphan gh-pages 2>&1
+          git checkout --orphan gh-pages 2>&1 | Out-Null
           git rm -rf . 2>&1 | Out-Null
         }
 
@@ -178,14 +182,16 @@ jobs:
         New-Item -ItemType File -Path .nojekyll -Force | Out-Null
 
         # 提交并推送
-        git add -A 2>&1
-        git commit -m "Update Allure report [skip ci]" 2>&1 | Out-Null
+        git add -A 2>&1 | Out-Null
+        $commitResult = git commit -m "Update Allure report [skip ci]" 2>&1
+        Write-Host "Commit: $commitResult"
 
         $repo = "${{ github.repository }}"
         $token = "${{ secrets.GITHUB_TOKEN }}"
         $remoteUrl = "https://x-access-token:$token@github.com/$repo.git"
-        git push $remoteUrl gh-pages 2>&1
+        $pushResult = git push $remoteUrl gh-pages 2>&1
         Write-Host "Push exit code: $LASTEXITCODE"
+        Write-Host "Push output: $pushResult"
 
         git checkout main 2>&1 | Out-Null
 
