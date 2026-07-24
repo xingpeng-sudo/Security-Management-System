@@ -5,7 +5,7 @@
 """
 import allure
 import pytest
-'''测试测试'''
+'''测试724'''
 from utils.assertions import AssertUtils
 from utils.attachments import attach_request_response, set_severity_from_priority
 from utils.logger import logger
