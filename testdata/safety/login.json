@@ -1,0 +1,107 @@
+{
+  "defaults": {
+    "data": {
+      "username": "admin",
+      "password": "adminAq123"
+    },
+    "expected": {
+      "http_status": 200
+    }
+  },
+  "test_cases": [
+    {
+      "case_id": "TC_LOGIN_001",
+      "case_name": "正常登录",
+      "description": "使用正确的用户名和密码登录，验证登录成功",
+      "priority": "P0",
+      "data": {
+        "username": "admin",
+        "password": "adminAq123",
+        "rememberMe": false
+      },
+      "expected": {
+        "should_success": true
+      }
+    },
+    {
+      "case_id": "TC_LOGIN_002",
+      "case_name": "错误密码登录",
+      "description": "使用正确用户名但错误密码登录，验证登录失败",
+      "priority": "P1",
+      "data": {
+        "username": "admin",
+        "password": "wrong_pass"
+      },
+      "expected": {
+        "should_success": false
+      }
+    },
+    {
+      "case_id": "TC_LOGIN_003",
+      "case_name": "空用户名登录",
+      "description": "用户名为空字符串，验证登录失败",
+      "priority": "P1",
+      "data": {
+        "username": "",
+        "password": "adminAq123"
+      },
+      "expected": {
+        "should_success": false
+      }
+    },
+    {
+      "case_id": "TC_LOGIN_004",
+      "case_name": "空密码登录",
+      "description": "密码为空字符串，验证登录失败",
+      "priority": "P1",
+      "data": {
+        "username": "admin",
+        "password": ""
+      },
+      "expected": {
+        "should_success": false
+      }
+    },
+    {
+      "case_id": "TC_LOGIN_005",
+      "case_name": "不存在的用户登录",
+      "description": "使用不存在的用户名登录，验证登录失败",
+      "priority": "P1",
+      "data": {
+        "username": "nonexist_user",
+        "password": "any123"
+      },
+      "expected": {
+        "should_success": false
+      }
+    },
+    {
+      "case_id": "TC_LOGIN_006",
+      "case_name": "记住我-true",
+      "description": "rememberMe=true登录，验证登录成功",
+      "priority": "P2",
+      "data": {
+        "username": "admin",
+        "password": "adminAq123",
+        "rememberMe": true
+      },
+      "expected": {
+        "should_success": true
+      }
+    },
+    {
+      "case_id": "TC_LOGIN_007",
+      "case_name": "记住我-false",
+      "description": "rememberMe=false登录，验证登录成功",
+      "priority": "P2",
+      "data": {
+        "username": "admin",
+        "password": "adminAq123",
+        "rememberMe": false
+      },
+      "expected": {
+        "should_success": true
+      }
+    }
+  ]
+}

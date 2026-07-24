@@ -1,0 +1,114 @@
+{
+  "defaults": {
+    "data": {
+      "params": {
+        "pageNum": 1,
+        "pageSize": 20
+      }
+    },
+    "expected": {
+      "min_total": 0
+    }
+  },
+  "test_cases": [
+    {
+      "case_id": "TC_DBS_001",
+      "case_name": "基础查询",
+      "description": "仅传入分页参数查询相关方企业黑名单列表，验证返回成功",
+      "priority": "P0",
+      "data": {
+        "params": {
+          "pageNum": 1,
+          "pageSize": 20
+        }
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_DBS_002",
+      "case_name": "按企业名称过滤",
+      "description": "验证supplierName参数能正确过滤列表",
+      "priority": "P1",
+      "data": {
+        "filter_field": "supplierName"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_DBS_003",
+      "case_name": "按营业执照号过滤",
+      "description": "验证businessLicenseNo参数能正确过滤列表",
+      "priority": "P1",
+      "data": {
+        "filter_field": "businessLicenseNo"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_DBS_004",
+      "case_name": "按审批状态过滤",
+      "description": "验证approveStatus参数能正确过滤列表",
+      "priority": "P2",
+      "data": {
+        "filter_field": "approveStatus"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_DBS_005",
+      "case_name": "按代理部门编码过滤",
+      "description": "验证proxyDeptcode参数能正确过滤列表",
+      "priority": "P2",
+      "data": {
+        "filter_field": "proxyDeptcode"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_DBS_006",
+      "case_name": "按法人过滤",
+      "description": "验证legalRepresentative参数能正确过滤列表",
+      "priority": "P2",
+      "data": {
+        "filter_field": "legalRepresentative"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_DBS_007",
+      "case_name": "按旧组织编码过滤",
+      "description": "验证oldOrgCode参数能正确过滤列表",
+      "priority": "P2",
+      "data": {
+        "filter_field": "oldOrgCode"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_DBS_008",
+      "case_name": "组合过滤",
+      "description": "同时按企业名称和营业执照号过滤，验证组合过滤功能",
+      "priority": "P1",
+      "data": {
+        "filter_fields": ["supplierName", "businessLicenseNo"]
+      },
+      "expected": {
+        "min_total": 1
+      }
+    }
+  ]
+}

@@ -1,0 +1,164 @@
+{
+  "defaults": {
+    "data": {
+      "params": {
+        "pageNum": 1,
+        "pageSize": 20
+      }
+    },
+    "expected": {
+      "min_total": 0
+    }
+  },
+  "test_cases": [
+    {
+      "case_id": "TC_SUP_001",
+      "case_name": "基础查询-仅分页",
+      "description": "仅传入分页参数查询相关方企业列表，验证返回成功",
+      "priority": "P0",
+      "data": {
+        "params": {
+          "pageNum": 1,
+          "pageSize": 20
+        }
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_SUP_002",
+      "case_name": "按企业名称过滤",
+      "description": "验证supplierName参数能正确过滤列表",
+      "priority": "P1",
+      "data": {
+        "filter_field": "supplierName"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_SUP_003",
+      "case_name": "按营业执照号过滤",
+      "description": "验证businessLicenseNo参数能正确过滤列表",
+      "priority": "P1",
+      "data": {
+        "filter_field": "businessLicenseNo"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_SUP_004",
+      "case_name": "按法定代表人过滤",
+      "description": "验证legalRepresentative参数能正确过滤列表",
+      "priority": "P1",
+      "data": {
+        "filter_field": "legalRepresentative"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_SUP_005",
+      "case_name": "按发证机关过滤",
+      "description": "验证blIssuingAuthority参数能正确过滤列表",
+      "priority": "P2",
+      "data": {
+        "filter_field": "blIssuingAuthority"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_SUP_006",
+      "case_name": "按营业执照起始日期过滤",
+      "description": "验证blStartDate参数能正确过滤列表",
+      "priority": "P2",
+      "data": {
+        "filter_field": "blStartDate"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_SUP_007",
+      "case_name": "按营业执照结束日期过滤",
+      "description": "验证blEndDate参数能正确过滤列表",
+      "priority": "P2",
+      "data": {
+        "filter_field": "blEndDate"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_SUP_008",
+      "case_name": "按联系人姓名过滤",
+      "description": "验证contactsName参数能正确过滤列表",
+      "priority": "P2",
+      "data": {
+        "filter_field": "contactsName"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_SUP_009",
+      "case_name": "按联系人电话过滤",
+      "description": "验证contactsPhone参数能正确过滤列表",
+      "priority": "P2",
+      "data": {
+        "filter_field": "contactsPhone"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_SUP_010",
+      "case_name": "按即将到期过滤",
+      "description": "验证expireSoon参数能正确过滤列表",
+      "priority": "P2",
+      "data": {
+        "params": {
+          "expireSoon": "1"
+        }
+      },
+      "expected": {
+        "min_total": 0
+      }
+    },
+    {
+      "case_id": "TC_SUP_011",
+      "case_name": "组合过滤-企业名+法人",
+      "description": "同时按企业名称和法定代表人过滤，验证组合过滤功能",
+      "priority": "P1",
+      "data": {
+        "filter_fields": ["supplierName", "legalRepresentative"]
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_SUP_012",
+      "case_name": "空参数查询",
+      "description": "不传任何过滤参数，仅使用默认分页查询",
+      "priority": "P2",
+      "data": {
+        "params": {}
+      },
+      "expected": {
+        "min_total": 1
+      }
+    }
+  ]
+}

@@ -199,6 +199,67 @@ class AssertUtils:
             f"响应时间断言失败: 期望<={max_seconds}s, 实际={actual:.3f}s"
         )
 
+    # ---- 列表格式断言 (total/rows/code) ----
+
+    @staticmethod
+    def assert_list_success(response: Response, min_total: int = 0) -> dict:
+        """
+        断言列表查询成功
+
+        适用于列表接口响应格式: {total: N, rows: [...], code: 0}
+
+        Args:
+            response: Response对象
+            min_total: 期望的最小总记录数
+
+        Returns:
+            解析后的响应JSON字典
+        """
+        AssertUtils.assert_status_ok(response)
+        resp_json = AssertUtils._parse_json(response)
+
+        actual_code = resp_json.get('code')
+        assert actual_code == 0, (
+            f"列表查询业务码断言失败: 期望code=0, 实际={actual_code}, "
+            f"响应={response.text[:500]}"
+        )
+
+        rows = resp_json.get('rows')
+        assert isinstance(rows, list), (
+            f"rows字段断言失败: 期望list, 实际={type(rows).__name__}, "
+            f"响应={response.text[:500]}"
+        )
+
+        total = resp_json.get('total', 0)
+        assert total >= min_total, (
+            f"total断言失败: 期望>={min_total}, 实际={total}"
+        )
+
+        logger.info(f"[Assert] 列表查询成功: total={total}, rows数量={len(rows)}")
+        return resp_json
+
+    @staticmethod
+    def assert_list_filtered(resp_json: dict, filter_field: str, filter_value: str):
+        """
+        断言列表过滤结果：rows中每条记录的filter_field包含filter_value
+
+        Args:
+            resp_json: assert_list_success返回的响应JSON
+            filter_field: 过滤字段名
+            filter_value: 期望的过滤值（包含匹配）
+        """
+        rows = resp_json.get('rows', [])
+        for i, row in enumerate(rows):
+            actual_value = str(row.get(filter_field, ''))
+            assert filter_value in actual_value, (
+                f"过滤断言失败: rows[{i}].{filter_field}="
+                f"'{actual_value}', 期望包含'{filter_value}'"
+            )
+        logger.info(
+            f"[Assert] 列表过滤验证通过: field={filter_field}, "
+            f"value={filter_value}, rows数量={len(rows)}"
+        )
+
     # ---- 统一断言入口 ----
 
     @classmethod

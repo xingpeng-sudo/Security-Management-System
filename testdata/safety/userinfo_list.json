@@ -1,0 +1,114 @@
+{
+  "defaults": {
+    "data": {
+      "params": {
+        "pageNum": 1,
+        "pageSize": 20
+      }
+    },
+    "expected": {
+      "min_total": 0
+    }
+  },
+  "test_cases": [
+    {
+      "case_id": "TC_USR_001",
+      "case_name": "基础查询",
+      "description": "仅传入分页参数查询相关方人力资源库列表，验证返回成功",
+      "priority": "P0",
+      "data": {
+        "params": {
+          "pageNum": 1,
+          "pageSize": 20
+        }
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_USR_002",
+      "case_name": "按合作单位过滤",
+      "description": "验证cooperaDept参数能正确过滤列表",
+      "priority": "P1",
+      "data": {
+        "filter_field": "cooperaDept"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_USR_003",
+      "case_name": "按人员姓名过滤",
+      "description": "验证userName参数能正确过滤列表",
+      "priority": "P1",
+      "data": {
+        "filter_field": "userName"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_USR_004",
+      "case_name": "按项目名称过滤",
+      "description": "验证proName参数能正确过滤列表",
+      "priority": "P1",
+      "data": {
+        "filter_field": "proName"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_USR_005",
+      "case_name": "按需求部门编码过滤",
+      "description": "验证needDeptcode参数能正确过滤列表",
+      "priority": "P2",
+      "data": {
+        "filter_field": "needDeptcode"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_USR_006",
+      "case_name": "按身份证号过滤",
+      "description": "验证identityCard参数能正确过滤列表",
+      "priority": "P1",
+      "data": {
+        "filter_field": "identityCard"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_USR_007",
+      "case_name": "按审批状态过滤",
+      "description": "验证approveStatus参数能正确过滤列表",
+      "priority": "P2",
+      "data": {
+        "filter_field": "approveStatus"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_USR_008",
+      "case_name": "组合过滤",
+      "description": "同时按人员姓名和合作单位过滤，验证组合过滤功能",
+      "priority": "P1",
+      "data": {
+        "filter_fields": ["userName", "cooperaDept"]
+      },
+      "expected": {
+        "min_total": 1
+      }
+    }
+  ]
+}

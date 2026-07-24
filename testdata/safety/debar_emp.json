@@ -1,0 +1,114 @@
+{
+  "defaults": {
+    "data": {
+      "params": {
+        "pageNum": 1,
+        "pageSize": 20
+      }
+    },
+    "expected": {
+      "min_total": 0
+    }
+  },
+  "test_cases": [
+    {
+      "case_id": "TC_DEM_001",
+      "case_name": "基础查询",
+      "description": "仅传入分页参数查询人员黑名单列表，验证返回成功",
+      "priority": "P0",
+      "data": {
+        "params": {
+          "pageNum": 1,
+          "pageSize": 20
+        }
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_DEM_002",
+      "case_name": "按人员姓名过滤",
+      "description": "验证empName参数能正确过滤列表",
+      "priority": "P1",
+      "data": {
+        "filter_field": "empName"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_DEM_003",
+      "case_name": "按身份证号过滤",
+      "description": "验证idcardNo参数能正确过滤列表",
+      "priority": "P1",
+      "data": {
+        "filter_field": "idcardNo"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_DEM_004",
+      "case_name": "按审批状态过滤",
+      "description": "验证approveStatus参数能正确过滤列表",
+      "priority": "P2",
+      "data": {
+        "filter_field": "approveStatus"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_DEM_005",
+      "case_name": "按委托部门编码过滤",
+      "description": "验证entrustDeptcode参数能正确过滤列表",
+      "priority": "P2",
+      "data": {
+        "filter_field": "entrustDeptcode"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_DEM_006",
+      "case_name": "按禁入状态过滤",
+      "description": "验证debarStatus参数能正确过滤列表",
+      "priority": "P2",
+      "data": {
+        "filter_field": "debarStatus"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_DEM_007",
+      "case_name": "按旧组织编码过滤",
+      "description": "验证oldOrgCode参数能正确过滤列表",
+      "priority": "P2",
+      "data": {
+        "filter_field": "oldOrgCode"
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_DEM_008",
+      "case_name": "组合过滤",
+      "description": "同时按人员姓名和身份证号过滤，验证组合过滤功能",
+      "priority": "P1",
+      "data": {
+        "filter_fields": ["empName", "idcardNo"]
+      },
+      "expected": {
+        "min_total": 1
+      }
+    }
+  ]
+}
