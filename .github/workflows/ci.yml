@@ -18,6 +18,8 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 jobs:
   # ========== 1. 代码质量检查 ==========
@@ -113,102 +115,68 @@ jobs:
         name: test-results
         path: reports/allure-results
 
-    - name: Check test results
+    - name: Check downloaded files
       shell: powershell
       run: |
-        $resultsDir = "reports/allure-results"
-        if ((Test-Path $resultsDir) -and (Get-ChildItem "$resultsDir\*.json" -ErrorAction SilentlyContinue)) {
-          $count = @(Get-ChildItem "$resultsDir\*.json").Count
-          Write-Host "Found $count JSON result files"
+        Write-Host "Allure results:"
+        if (Test-Path reports/allure-results) {
+          $count = @(Get-ChildItem reports/allure-results/*.json -ErrorAction SilentlyContinue).Count
+          Write-Host "Found $count JSON files"
         } else {
-          Write-Host "::warning::No allure-results found, skipping report generation"
-          exit 0
+          Write-Host "allure-results not found"
         }
 
     - name: Generate Allure Report
+      if: always()
       shell: powershell
       run: |
-        $ErrorActionPreference = 'Continue'
         $allureCmd = "D:\allure-2.24.1\bin\allure.bat"
-        if (-not (Test-Path $allureCmd)) {
-          Write-Host "::error::Allure not found at $allureCmd"
-          exit 1
-        }
+        Write-Host "Using Allure: $allureCmd"
 
-        # 保留历史趋势
-        if (Test-Path allure-history/history) {
-          Copy-Item allure-history/history reports/allure-results/ -Recurse -Force -ErrorAction SilentlyContinue
-        }
+        if ((Test-Path reports/allure-results) -and (Get-ChildItem reports/allure-results/*.json -ErrorAction SilentlyContinue)) {
+          Write-Host "Found allure-results, generating report..."
 
-        # 用 cmd /c 调用 allure，避免 PS 5.1 把 stderr 当错误
-        cmd /c ""$allureCmd" generate reports/allure-results -o allure-report --clean"
-        if ($LASTEXITCODE -ne 0) {
-          Write-Host "::warning::Allure generate failed (exit=$LASTEXITCODE)"
-          exit 0
-        }
-        Write-Host "Allure report generated successfully"
+          # 创建 allure-history 目录
+          New-Item -ItemType Directory -Force -Path allure-history
 
-        # 保存历史供下次构建使用
-        New-Item -ItemType Directory -Force -Path allure-history | Out-Null
-        if (Test-Path allure-report/history) {
-          Copy-Item allure-report/history allure-history/ -Recurse -Force -ErrorAction SilentlyContinue
-        }
+          # 检查历史趋势
+          if (Test-Path allure-history/history) {
+            Write-Host "Found existing history, copying to allure-results..."
+            Copy-Item allure-history/history reports/allure-results/ -Recurse -Force -ErrorAction SilentlyContinue
+          }
 
-    - name: Deploy to GitHub Pages
-      shell: powershell
-      run: |
-        $ErrorActionPreference = 'Continue'
-        if (-not (Test-Path allure-report)) {
-          Write-Host "No report to deploy"
-          exit 0
-        }
+          # 生成报告
+          & $allureCmd generate reports/allure-results -o allure-report --clean
 
-        # 先把报告备份到临时目录，切分支后不会被删
-        $tempReport = "$env:RUNNER_TEMP\allure-report"
-        if (Test-Path $tempReport) { Remove-Item $tempReport -Recurse -Force }
-        Copy-Item allure-report $tempReport -Recurse -Force
-        Write-Host "Report backed up to $tempReport"
-
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
-
-        # 切换到 gh-pages 分支
-        $fetchResult = git fetch origin gh-pages 2>&1
-        if ($LASTEXITCODE -eq 0) {
-          git stash 2>&1 | Out-Null
-          git checkout gh-pages 2>&1 | Out-Null
-          Get-ChildItem -Force | Where-Object { $_.Name -ne ".git" } | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "Allure report generated successfully"
+            # 复制报告到 allure-history（供 peaceiris action 部署）
+            Copy-Item allure-report/* allure-history/ -Recurse -Force
+            Write-Host "Report copied to allure-history"
+          } else {
+            Write-Host "Allure generate failed with code $LASTEXITCODE"
+            '<html><body><h1>Report Generation Failed</h1></body></html>' | Out-File -FilePath allure-history/index.html
+          }
         } else {
-          git checkout --orphan gh-pages 2>&1 | Out-Null
-          git rm -rf . 2>&1 | Out-Null
+          Write-Host "No allure-results found, creating placeholder"
+          New-Item -ItemType Directory -Force -Path allure-history
+          '<html><body><h1>No Test Results</h1></body></html>' | Out-File -FilePath allure-history/index.html
         }
 
-        # 从临时目录复制报告内容
-        Copy-Item "$tempReport/*" . -Recurse -Force
-        New-Item -ItemType File -Path .nojekyll -Force | Out-Null
-        Write-Host "Report files copied to gh-pages"
-
-        # 提交并推送
-        git add -A 2>&1 | Out-Null
-        $commitResult = git commit -m "Update Allure report [skip ci]" 2>&1
-        Write-Host "Commit: $commitResult"
-
-        $repo = "${{ github.repository }}"
-        $token = "${{ secrets.GITHUB_TOKEN }}"
-        $remoteUrl = "https://x-access-token:$token@github.com/$repo.git"
-        $pushResult = git push $remoteUrl gh-pages 2>&1
-        Write-Host "Push exit code: $LASTEXITCODE"
-        Write-Host "Push output: $pushResult"
-
-        git checkout main 2>&1 | Out-Null
+    - name: Deploy report to GitHub Pages
+      if: always()
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_branch: gh-pages
+        publish_dir: allure-history
 
     - name: Upload report artifact
       uses: actions/upload-artifact@v4
       if: always()
       with:
         name: allure-report
-        path: allure-report/
-        retention-days: 14
+        path: allure-history/
 
   # ========== 4. 结果通知 ==========
   notify:
