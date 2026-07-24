@@ -5,7 +5,7 @@
 """
 import allure
 import pytest
-'''验证CI-使用Github runnner的方式'''
+'''测试'''
 from utils.assertions import AssertUtils
 from utils.attachments import attach_request_response, set_severity_from_priority
 from utils.logger import logger
