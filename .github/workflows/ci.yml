@@ -163,6 +163,12 @@ jobs:
           exit 0
         }
 
+        # 先把报告备份到临时目录，切分支后不会被删
+        $tempReport = "$env:RUNNER_TEMP\allure-report"
+        if (Test-Path $tempReport) { Remove-Item $tempReport -Recurse -Force }
+        Copy-Item allure-report $tempReport -Recurse -Force
+        Write-Host "Report backed up to $tempReport"
+
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
 
@@ -177,9 +183,10 @@ jobs:
           git rm -rf . 2>&1 | Out-Null
         }
 
-        # 复制报告内容
-        Copy-Item allure-report/* . -Recurse -Force
+        # 从临时目录复制报告内容
+        Copy-Item "$tempReport/*" . -Recurse -Force
         New-Item -ItemType File -Path .nojekyll -Force | Out-Null
+        Write-Host "Report files copied to gh-pages"
 
         # 提交并推送
         git add -A 2>&1 | Out-Null
