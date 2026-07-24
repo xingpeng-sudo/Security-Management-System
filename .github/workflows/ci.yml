@@ -30,23 +30,23 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Install lint tools
-      shell: pwsh
+      shell: powershell
       run: |
         python -m pip install --upgrade pip
         pip install flake8 black isort
 
     - name: Check code format with black
-      shell: pwsh
+      shell: powershell
       run: black --check --diff api testcases utils config conftest.py
       continue-on-error: true
 
     - name: Check import order with isort
-      shell: pwsh
+      shell: powershell
       run: isort --check-only --diff api testcases utils config conftest.py
       continue-on-error: true
 
     - name: Lint with flake8
-      shell: pwsh
+      shell: powershell
       run: |
         # 只检查严重错误（语法错误、未定义变量等），风格问题不阻断CI
         flake8 api testcases utils config conftest.py --select=E9,F63,F7,F82 --show-source --statistics
@@ -62,13 +62,13 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Install dependencies
-      shell: pwsh
+      shell: powershell
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
     - name: Run API Tests
-      shell: pwsh
+      shell: powershell
       env:
         TEST_ENV: test
         BASE_URL: ${{ secrets.BASE_URL }}
@@ -113,7 +113,7 @@ jobs:
         path: reports/allure-results
 
     - name: Check test results
-      shell: pwsh
+      shell: powershell
       run: |
         $resultsDir = "reports/allure-results"
         if ((Test-Path $resultsDir) -and (Get-ChildItem "$resultsDir\*.json" -ErrorAction SilentlyContinue)) {
@@ -125,7 +125,7 @@ jobs:
         }
 
     - name: Generate Allure Report
-      shell: pwsh
+      shell: powershell
       run: |
         $allureCmd = "D:\allure-2.24.1\bin\allure.bat"
         if (-not (Test-Path $allureCmd)) {
@@ -152,7 +152,7 @@ jobs:
         }
 
     - name: Deploy to GitHub Pages
-      shell: pwsh
+      shell: powershell
       run: |
         if (-not (Test-Path allure-report)) {
           Write-Host "No report to deploy"
@@ -206,7 +206,7 @@ jobs:
 
     steps:
     - name: Summary
-      shell: pwsh
+      shell: powershell
       run: |
         Write-Host "========== CI Summary =========="
         Write-Host "Lint:  ${{ needs.lint.result }}"
