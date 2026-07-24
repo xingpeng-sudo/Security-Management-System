@@ -1,6 +1,0 @@
-[32m2026-07-24 11:15:40[0m | [1mINFO    [0m | [36mmodules.coordination.test_unit_register[0m:[36mtest_unit_register[0m:[36m28[0m | [1m执行测试用例: TC_REG_010 - 异常注册-公司名称为空字符串 [P1][0m
-[32m2026-07-24 11:15:40[0m | [1mINFO    [0m | [36mapi.modules.coordination.unit_api[0m:[36mregister[0m:[36m42[0m | [1m[API] 注册相关方单位: [0m
-[32m2026-07-24 11:15:40[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m119[0m | [1m[Request] POST http://10.2.254.243/app/xl/unit/register | Attempt: 1/3[0m
-[32m2026-07-24 11:15:40[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m129[0m | [1m[Response] 200 | Time: 0.013s[0m
-[32m2026-07-24 11:15:40[0m | [1mINFO    [0m | [36mutils.assertions[0m:[36massert_business_fail[0m:[36m111[0m | [1m[Assert] 业务失败: code=500, msg=Transaction was marked for rollback only; cannot commit; nested exception is org.hibernate.TransactionException: Transaction was marked for rollback only; cannot commit[0m
-[32m2026-07-24 11:15:40[0m | [1mINFO    [0m | [36mmodules.coordination.test_unit_register[0m:[36mtest_unit_register[0m:[36m37[0m | [1m测试用例执行完成: TC_REG_010 - 异常注册-公司名称为空字符串[0m
