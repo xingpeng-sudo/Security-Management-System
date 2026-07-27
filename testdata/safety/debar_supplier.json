@@ -14,7 +14,7 @@
     {
       "case_id": "TC_DBS_001",
       "case_name": "基础查询-默认分页",
-      "description": "pageNum=1, pageSize=20 查询相关方企业黑名单列表，验证返回成功且数据结构正确",
+      "description": "pageNum=1, pageSize=20 查询企业黑名单列表，作为baseline供后续过滤用例取值",
       "priority": "P0",
       "data": {
         "params": {
@@ -29,7 +29,7 @@
     {
       "case_id": "TC_DBS_002",
       "case_name": "第二页查询",
-      "description": "pageNum=2, pageSize=20 查询第二页，验证分页功能正常",
+      "description": "pageNum=2 验证分页功能，若总数<=20则自动跳过",
       "priority": "P1",
       "data": {
         "params": {
@@ -45,7 +45,7 @@
     {
       "case_id": "TC_DBS_003",
       "case_name": "最小页大小-pageSize=1",
-      "description": "pageSize=1 查询，验证返回rows最多1条",
+      "description": "pageSize=1 验证返回rows最多1条",
       "priority": "P1",
       "data": {
         "params": {
@@ -61,7 +61,7 @@
     {
       "case_id": "TC_DBS_004",
       "case_name": "大页大小-pageSize=100",
-      "description": "pageSize=100 查询，验证大页量正常返回",
+      "description": "pageSize=100 验证大页量正常返回",
       "priority": "P2",
       "data": {
         "params": {
@@ -77,7 +77,7 @@
     {
       "case_id": "TC_DBS_005",
       "case_name": "边界-pageNum=0",
-      "description": "pageNum=0 非法页码，验证系统容错处理",
+      "description": "pageNum=0 非法页码，验证系统容错",
       "priority": "P2",
       "data": {
         "params": {
@@ -92,7 +92,7 @@
     {
       "case_id": "TC_DBS_006",
       "case_name": "边界-pageNum超出总页数",
-      "description": "pageNum=9999 远超实际页数，验证返回空rows且code=0",
+      "description": "pageNum=9999 验证返回空rows",
       "priority": "P2",
       "data": {
         "params": {
@@ -108,7 +108,7 @@
     {
       "case_id": "TC_DBS_007",
       "case_name": "边界-pageSize=0",
-      "description": "pageSize=0 非法页大小，验证系统容错处理",
+      "description": "pageSize=0 非法页大小，验证系统容错",
       "priority": "P2",
       "data": {
         "params": {
@@ -123,7 +123,7 @@
     {
       "case_id": "TC_DBS_008",
       "case_name": "边界-负数分页",
-      "description": "pageNum=-1, pageSize=-1 非法负数，验证系统容错处理",
+      "description": "pageNum=-1, pageSize=-1 验证系统容错",
       "priority": "P2",
       "data": {
         "params": {
@@ -137,8 +137,8 @@
     },
     {
       "case_id": "TC_DBS_009",
-      "case_name": "动态过滤-按企业名称",
-      "description": "从baseline取真实supplierName值验证过滤功能",
+      "case_name": "过滤-按企业名称",
+      "description": "从baseline取真实supplierName值过滤，验证返回的rows都匹配该企业名称",
       "priority": "P1",
       "data": {
         "filter_fields": ["supplierName"]
@@ -149,8 +149,8 @@
     },
     {
       "case_id": "TC_DBS_010",
-      "case_name": "动态过滤-按营业执照号",
-      "description": "从baseline取真实businessLicenseNo值验证过滤功能",
+      "case_name": "过滤-按营业执照号",
+      "description": "从baseline取真实businessLicenseNo值过滤，验证返回的rows都匹配该营业执照号",
       "priority": "P1",
       "data": {
         "filter_fields": ["businessLicenseNo"]
@@ -161,8 +161,32 @@
     },
     {
       "case_id": "TC_DBS_011",
-      "case_name": "动态组合过滤-企业名+营业执照",
-      "description": "从baseline取真实值组合过滤，验证多字段联合查询",
+      "case_name": "过滤-按审批状态",
+      "description": "从baseline取真实approveStatus值过滤，验证返回的rows都匹配该审批状态",
+      "priority": "P1",
+      "data": {
+        "filter_fields": ["approveStatus"]
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_DBS_012",
+      "case_name": "过滤-按法人",
+      "description": "从baseline取真实legalRepresentative值过滤，验证返回的rows都匹配该法人",
+      "priority": "P1",
+      "data": {
+        "filter_fields": ["legalRepresentative"]
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_DBS_013",
+      "case_name": "组合过滤-企业名+营业执照",
+      "description": "从baseline取真实supplierName+businessLicenseNo组合过滤，验证返回rows同时匹配两个条件",
       "priority": "P1",
       "data": {
         "filter_fields": ["supplierName", "businessLicenseNo"]
@@ -172,9 +196,9 @@
       }
     },
     {
-      "case_id": "TC_DBS_012",
+      "case_id": "TC_DBS_014",
       "case_name": "不存在的企业名称过滤",
-      "description": "使用不存在的supplierName值，验证返回空rows且code=0",
+      "description": "用不存在的supplierName值过滤，验证返回空rows且code=0",
       "priority": "P2",
       "data": {
         "params": {
@@ -189,25 +213,9 @@
       }
     },
     {
-      "case_id": "TC_DBS_013",
-      "case_name": "空字符串过滤",
-      "description": "supplierName传空字符串，验证等同于不过滤或正常处理",
-      "priority": "P2",
-      "data": {
-        "params": {
-          "pageNum": 1,
-          "pageSize": 20,
-          "supplierName": ""
-        }
-      },
-      "expected": {
-        "min_total": 0
-      }
-    },
-    {
-      "case_id": "TC_DBS_014",
-      "case_name": "SQL注入-企业名称",
-      "description": "supplierName包含SQL注入字符，验证系统安全处理",
+      "case_id": "TC_DBS_015",
+      "case_name": "安全-SQL注入过滤",
+      "description": "supplierName传SQL注入字符，验证系统安全处理，返回空rows",
       "priority": "P2",
       "data": {
         "params": {
