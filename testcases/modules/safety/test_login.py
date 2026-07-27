@@ -11,7 +11,7 @@ from utils.attachments import attach_request_response, set_severity_from_priorit
 from utils.logger import logger
 from utils.parametrize import load_parametrize
 
-
+"""测试"""
 @allure.feature("安全管理平台PC端")
 @allure.story("登录")
 @pytest.mark.safety
