@@ -1,0 +1,7 @@
+[32m2026-07-27 15:46:57[0m | [1mINFO    [0m | [36mmodules.safety.test_userinfo_list[0m:[36mtest_userinfo_list[0m:[36m27[0m | [1m执行测试用例: TC_USR_002 - 第二页查询 [P1][0m
+[32m2026-07-27 15:46:57[0m | [1mINFO    [0m | [36mapi.modules.safety.safety_api[0m:[36mget_userinfo_list[0m:[36m88[0m | [1m[API] 查询相关方人力资源库: {'pageNum': 2, 'pageSize': 20}[0m
+[32m2026-07-27 15:46:57[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m119[0m | [1m[Request] POST http://10.2.254.243/aqserver/xl/userinfo/list | Attempt: 1/3[0m
+[32m2026-07-27 15:46:57[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m129[0m | [1m[Response] 200 | Time: 0.027s[0m
+[32m2026-07-27 15:46:57[0m | [1mINFO    [0m | [36mutils.assertions[0m:[36massert_list_success[0m:[36m238[0m | [1m[Assert] 列表查询成功: total=21797, rows数量=20[0m
+[32m2026-07-27 15:46:57[0m | [1mINFO    [0m | [36mmodules.safety.test_userinfo_list[0m:[36m_verify_pagination[0m:[36m96[0m | [1m[Test] 分页验证通过: total=21797, page2 rows=20[0m
+[32m2026-07-27 15:46:57[0m | [1mINFO    [0m | [36mmodules.safety.test_userinfo_list[0m:[36mtest_userinfo_list[0m:[36m46[0m | [1m测试用例执行完成: TC_USR_002 - 第二页查询[0m

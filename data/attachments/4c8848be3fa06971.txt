@@ -1,0 +1,5 @@
+[32m2026-07-27 15:46:55[0m | [1mINFO    [0m | [36mmodules.safety.test_debar_supplier_list[0m:[36mtest_debar_supplier_list[0m:[36m27[0m | [1m执行测试用例: TC_DBS_002 - 第二页查询 [P1][0m
+[32m2026-07-27 15:46:55[0m | [1mINFO    [0m | [36mapi.modules.safety.safety_api[0m:[36mget_debar_supplier_list[0m:[36m98[0m | [1m[API] 查询相关方企业黑名单: {'pageNum': 2, 'pageSize': 20}[0m
+[32m2026-07-27 15:46:55[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m119[0m | [1m[Request] POST http://10.2.254.243/aqserver/zr/debarSupplier/list | Attempt: 1/3[0m
+[32m2026-07-27 15:46:55[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m129[0m | [1m[Response] 200 | Time: 0.016s[0m
+[32m2026-07-27 15:46:55[0m | [1mINFO    [0m | [36mutils.assertions[0m:[36massert_list_success[0m:[36m238[0m | [1m[Assert] 列表查询成功: total=9, rows数量=9[0m
