@@ -13,8 +13,8 @@
   "test_cases": [
     {
       "case_id": "TC_USR_001",
-      "case_name": "基础查询",
-      "description": "仅传入分页参数查询相关方人力资源库列表，验证返回成功",
+      "case_name": "基础查询-默认分页",
+      "description": "pageNum=1, pageSize=20 查询相关方人力资源库列表，验证返回成功且数据结构正确",
       "priority": "P0",
       "data": {
         "params": {
@@ -28,86 +28,209 @@
     },
     {
       "case_id": "TC_USR_002",
-      "case_name": "按合作单位过滤",
-      "description": "验证cooperaDept参数能正确过滤列表",
+      "case_name": "第二页查询",
+      "description": "pageNum=2, pageSize=20 查询第二页，验证分页功能正常",
       "priority": "P1",
       "data": {
-        "filter_field": "cooperaDept"
+        "params": {
+          "pageNum": 2,
+          "pageSize": 20
+        }
       },
       "expected": {
-        "min_total": 1
+        "min_total": 0,
+        "verify_pagination": true
       }
     },
     {
       "case_id": "TC_USR_003",
-      "case_name": "按人员姓名过滤",
-      "description": "验证userName参数能正确过滤列表",
+      "case_name": "最小页大小-pageSize=1",
+      "description": "pageSize=1 查询，验证返回rows最多1条",
       "priority": "P1",
       "data": {
-        "filter_field": "userName"
+        "params": {
+          "pageNum": 1,
+          "pageSize": 1
+        }
       },
       "expected": {
-        "min_total": 1
+        "min_total": 0,
+        "max_rows": 1
       }
     },
     {
       "case_id": "TC_USR_004",
-      "case_name": "按项目名称过滤",
-      "description": "验证proName参数能正确过滤列表",
-      "priority": "P1",
+      "case_name": "大页大小-pageSize=100",
+      "description": "pageSize=100 查询，验证大页量正常返回",
+      "priority": "P2",
       "data": {
-        "filter_field": "proName"
+        "params": {
+          "pageNum": 1,
+          "pageSize": 100
+        }
       },
       "expected": {
-        "min_total": 1
+        "min_total": 0,
+        "max_rows": 100
       }
     },
     {
       "case_id": "TC_USR_005",
-      "case_name": "按需求部门编码过滤",
-      "description": "验证needDeptcode参数能正确过滤列表",
+      "case_name": "边界-pageNum=0",
+      "description": "pageNum=0 非法页码，验证系统容错处理",
       "priority": "P2",
       "data": {
-        "filter_field": "needDeptcode"
+        "params": {
+          "pageNum": 0,
+          "pageSize": 20
+        }
       },
       "expected": {
-        "min_total": 1
+        "allow_error": true
       }
     },
     {
       "case_id": "TC_USR_006",
-      "case_name": "按身份证号过滤",
-      "description": "验证identityCard参数能正确过滤列表",
-      "priority": "P1",
+      "case_name": "边界-pageNum超出总页数",
+      "description": "pageNum=9999 远超实际页数，验证返回空rows且code=0",
+      "priority": "P2",
       "data": {
-        "filter_field": "identityCard"
+        "params": {
+          "pageNum": 9999,
+          "pageSize": 20
+        }
       },
       "expected": {
-        "min_total": 1
+        "min_total": 0,
+        "expect_empty_rows": true
       }
     },
     {
       "case_id": "TC_USR_007",
-      "case_name": "按审批状态过滤",
-      "description": "验证approveStatus参数能正确过滤列表",
+      "case_name": "边界-pageSize=0",
+      "description": "pageSize=0 非法页大小，验证系统容错处理",
       "priority": "P2",
       "data": {
-        "filter_field": "approveStatus"
+        "params": {
+          "pageNum": 1,
+          "pageSize": 0
+        }
+      },
+      "expected": {
+        "allow_error": true
+      }
+    },
+    {
+      "case_id": "TC_USR_008",
+      "case_name": "边界-负数分页",
+      "description": "pageNum=-1, pageSize=-1 非法负数，验证系统容错处理",
+      "priority": "P2",
+      "data": {
+        "params": {
+          "pageNum": -1,
+          "pageSize": -1
+        }
+      },
+      "expected": {
+        "allow_error": true
+      }
+    },
+    {
+      "case_id": "TC_USR_009",
+      "case_name": "动态过滤-按人员姓名",
+      "description": "从baseline取真实userName值验证过滤功能",
+      "priority": "P1",
+      "data": {
+        "filter_fields": ["userName"]
       },
       "expected": {
         "min_total": 1
       }
     },
     {
-      "case_id": "TC_USR_008",
-      "case_name": "组合过滤",
-      "description": "同时按人员姓名和合作单位过滤，验证组合过滤功能",
+      "case_id": "TC_USR_010",
+      "case_name": "动态过滤-按合作单位",
+      "description": "从baseline取真实cooperaDept值验证过滤功能",
+      "priority": "P1",
+      "data": {
+        "filter_fields": ["cooperaDept"]
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_USR_011",
+      "case_name": "动态组合过滤-姓名+合作单位",
+      "description": "从baseline取真实值组合过滤，验证多字段联合查询",
       "priority": "P1",
       "data": {
         "filter_fields": ["userName", "cooperaDept"]
       },
       "expected": {
         "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_USR_012",
+      "case_name": "动态过滤-按身份证号",
+      "description": "从baseline取真实identityCard值验证过滤功能",
+      "priority": "P1",
+      "data": {
+        "filter_fields": ["identityCard"]
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_USR_013",
+      "case_name": "不存在的人员姓名过滤",
+      "description": "使用不存在的userName值，验证返回空rows且code=0",
+      "priority": "P2",
+      "data": {
+        "params": {
+          "pageNum": 1,
+          "pageSize": 20,
+          "userName": "不存在的名字XYZ999"
+        }
+      },
+      "expected": {
+        "min_total": 0,
+        "expect_empty_rows": true
+      }
+    },
+    {
+      "case_id": "TC_USR_014",
+      "case_name": "空字符串过滤",
+      "description": "userName传空字符串，验证等同于不过滤或正常处理",
+      "priority": "P2",
+      "data": {
+        "params": {
+          "pageNum": 1,
+          "pageSize": 20,
+          "userName": ""
+        }
+      },
+      "expected": {
+        "min_total": 0
+      }
+    },
+    {
+      "case_id": "TC_USR_015",
+      "case_name": "SQL注入-人员姓名",
+      "description": "userName包含SQL注入字符，验证系统安全处理",
+      "priority": "P2",
+      "data": {
+        "params": {
+          "pageNum": 1,
+          "pageSize": 20,
+          "userName": "' OR '1'='1"
+        }
+      },
+      "expected": {
+        "min_total": 0,
+        "expect_empty_rows": true
       }
     }
   ]

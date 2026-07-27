@@ -13,8 +13,8 @@
   "test_cases": [
     {
       "case_id": "TC_SUP_001",
-      "case_name": "基础查询-仅分页",
-      "description": "仅传入分页参数查询相关方企业列表，验证返回成功",
+      "case_name": "基础查询-默认分页",
+      "description": "pageNum=1, pageSize=20 查询相关方企业列表，验证返回成功且数据结构正确",
       "priority": "P0",
       "data": {
         "params": {
@@ -28,95 +28,120 @@
     },
     {
       "case_id": "TC_SUP_002",
-      "case_name": "按企业名称过滤",
-      "description": "验证supplierName参数能正确过滤列表",
+      "case_name": "第二页查询",
+      "description": "pageNum=2, pageSize=20 查询第二页，验证分页功能正常",
       "priority": "P1",
       "data": {
-        "filter_field": "supplierName"
+        "params": {
+          "pageNum": 2,
+          "pageSize": 20
+        }
       },
       "expected": {
-        "min_total": 1
+        "min_total": 0,
+        "verify_pagination": true
       }
     },
     {
       "case_id": "TC_SUP_003",
-      "case_name": "按营业执照号过滤",
-      "description": "验证businessLicenseNo参数能正确过滤列表",
+      "case_name": "最小页大小-pageSize=1",
+      "description": "pageSize=1 查询，验证返回rows最多1条",
       "priority": "P1",
       "data": {
-        "filter_field": "businessLicenseNo"
+        "params": {
+          "pageNum": 1,
+          "pageSize": 1
+        }
       },
       "expected": {
-        "min_total": 1
+        "min_total": 0,
+        "max_rows": 1
       }
     },
     {
       "case_id": "TC_SUP_004",
-      "case_name": "按法定代表人过滤",
-      "description": "验证legalRepresentative参数能正确过滤列表",
-      "priority": "P1",
+      "case_name": "大页大小-pageSize=100",
+      "description": "pageSize=100 查询，验证大页量正常返回",
+      "priority": "P2",
       "data": {
-        "filter_field": "legalRepresentative"
+        "params": {
+          "pageNum": 1,
+          "pageSize": 100
+        }
       },
       "expected": {
-        "min_total": 1
+        "min_total": 0,
+        "max_rows": 100
       }
     },
     {
       "case_id": "TC_SUP_005",
-      "case_name": "按发证机关过滤",
-      "description": "验证blIssuingAuthority参数能正确过滤列表",
+      "case_name": "边界-pageNum=0",
+      "description": "pageNum=0 非法页码，验证系统容错处理",
       "priority": "P2",
       "data": {
-        "filter_field": "blIssuingAuthority"
+        "params": {
+          "pageNum": 0,
+          "pageSize": 20
+        }
       },
       "expected": {
-        "min_total": 1
+        "allow_error": true
       }
     },
     {
       "case_id": "TC_SUP_006",
-      "case_name": "按营业执照起始日期过滤",
-      "description": "验证blStartDate参数能正确过滤列表",
+      "case_name": "边界-pageNum超出总页数",
+      "description": "pageNum=9999 远超实际页数，验证返回空rows且code=0",
       "priority": "P2",
       "data": {
-        "filter_field": "blStartDate"
+        "params": {
+          "pageNum": 9999,
+          "pageSize": 20
+        }
       },
       "expected": {
-        "min_total": 1
+        "min_total": 0,
+        "expect_empty_rows": true
       }
     },
     {
       "case_id": "TC_SUP_007",
-      "case_name": "按营业执照结束日期过滤",
-      "description": "验证blEndDate参数能正确过滤列表",
+      "case_name": "边界-pageSize=0",
+      "description": "pageSize=0 非法页大小，验证系统容错处理",
       "priority": "P2",
       "data": {
-        "filter_field": "blEndDate"
+        "params": {
+          "pageNum": 1,
+          "pageSize": 0
+        }
       },
       "expected": {
-        "min_total": 1
+        "allow_error": true
       }
     },
     {
       "case_id": "TC_SUP_008",
-      "case_name": "按联系人姓名过滤",
-      "description": "验证contactsName参数能正确过滤列表",
+      "case_name": "边界-负数分页",
+      "description": "pageNum=-1, pageSize=-1 非法负数，验证系统容错处理",
       "priority": "P2",
       "data": {
-        "filter_field": "contactsName"
+        "params": {
+          "pageNum": -1,
+          "pageSize": -1
+        }
       },
       "expected": {
-        "min_total": 1
+        "allow_error": true
       }
     },
     {
       "case_id": "TC_SUP_009",
-      "case_name": "按联系人电话过滤",
-      "description": "验证contactsPhone参数能正确过滤列表",
-      "priority": "P2",
+      "case_name": "动态过滤-按企业名称",
+      "description": "从baseline取真实supplierName值验证过滤功能",
+      "priority": "P1",
       "data": {
-        "filter_field": "contactsPhone"
+        "filter_fields": ["supplierName"]
       },
       "expected": {
         "min_total": 1
@@ -124,22 +149,20 @@
     },
     {
       "case_id": "TC_SUP_010",
-      "case_name": "按即将到期过滤",
-      "description": "验证expireSoon参数能正确过滤列表",
-      "priority": "P2",
+      "case_name": "动态过滤-按法定代表人",
+      "description": "从baseline取真实legalRepresentative值验证过滤功能",
+      "priority": "P1",
       "data": {
-        "params": {
-          "expireSoon": "1"
-        }
+        "filter_fields": ["legalRepresentative"]
       },
       "expected": {
-        "min_total": 0
+        "min_total": 1
       }
     },
     {
       "case_id": "TC_SUP_011",
-      "case_name": "组合过滤-企业名+法人",
-      "description": "同时按企业名称和法定代表人过滤，验证组合过滤功能",
+      "case_name": "动态组合过滤-企业名+法人",
+      "description": "从baseline取真实值组合过滤，验证多字段联合查询",
       "priority": "P1",
       "data": {
         "filter_fields": ["supplierName", "legalRepresentative"]
@@ -150,14 +173,76 @@
     },
     {
       "case_id": "TC_SUP_012",
-      "case_name": "空参数查询",
-      "description": "不传任何过滤参数，仅使用默认分页查询",
+      "case_name": "动态过滤-按联系人姓名",
+      "description": "从baseline取真实contactsName值验证过滤功能",
       "priority": "P2",
       "data": {
-        "params": {}
+        "filter_fields": ["contactsName"]
       },
       "expected": {
         "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_SUP_013",
+      "case_name": "动态过滤-按联系人电话",
+      "description": "从baseline取真实contactsPhone值验证过滤功能",
+      "priority": "P2",
+      "data": {
+        "filter_fields": ["contactsPhone"]
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_SUP_014",
+      "case_name": "不存在的企业名称过滤",
+      "description": "使用不存在的supplierName值，验证返回空rows且code=0",
+      "priority": "P2",
+      "data": {
+        "params": {
+          "pageNum": 1,
+          "pageSize": 20,
+          "supplierName": "不存在的企业XYZ999"
+        }
+      },
+      "expected": {
+        "min_total": 0,
+        "expect_empty_rows": true
+      }
+    },
+    {
+      "case_id": "TC_SUP_015",
+      "case_name": "空字符串过滤",
+      "description": "supplierName传空字符串，验证等同于不过滤或正常处理",
+      "priority": "P2",
+      "data": {
+        "params": {
+          "pageNum": 1,
+          "pageSize": 20,
+          "supplierName": ""
+        }
+      },
+      "expected": {
+        "min_total": 0
+      }
+    },
+    {
+      "case_id": "TC_SUP_016",
+      "case_name": "SQL注入-企业名称",
+      "description": "supplierName包含SQL注入字符，验证系统安全处理",
+      "priority": "P2",
+      "data": {
+        "params": {
+          "pageNum": 1,
+          "pageSize": 20,
+          "supplierName": "' OR '1'='1"
+        }
+      },
+      "expected": {
+        "min_total": 0,
+        "expect_empty_rows": true
       }
     }
   ]

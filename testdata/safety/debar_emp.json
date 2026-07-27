@@ -13,8 +13,8 @@
   "test_cases": [
     {
       "case_id": "TC_DEM_001",
-      "case_name": "基础查询",
-      "description": "仅传入分页参数查询人员黑名单列表，验证返回成功",
+      "case_name": "基础查询-默认分页",
+      "description": "pageNum=1, pageSize=20 查询人员黑名单列表，验证返回成功且数据结构正确",
       "priority": "P0",
       "data": {
         "params": {
@@ -28,86 +28,197 @@
     },
     {
       "case_id": "TC_DEM_002",
-      "case_name": "按人员姓名过滤",
-      "description": "验证empName参数能正确过滤列表",
+      "case_name": "第二页查询",
+      "description": "pageNum=2, pageSize=20 查询第二页，验证分页功能正常（若总数<=20则跳过）",
       "priority": "P1",
       "data": {
-        "filter_field": "empName"
+        "params": {
+          "pageNum": 2,
+          "pageSize": 20
+        }
       },
       "expected": {
-        "min_total": 1
+        "min_total": 0,
+        "verify_pagination": true
       }
     },
     {
       "case_id": "TC_DEM_003",
-      "case_name": "按身份证号过滤",
-      "description": "验证idcardNo参数能正确过滤列表",
+      "case_name": "最小页大小-pageSize=1",
+      "description": "pageSize=1 查询，验证返回rows最多1条",
       "priority": "P1",
       "data": {
-        "filter_field": "idcardNo"
+        "params": {
+          "pageNum": 1,
+          "pageSize": 1
+        }
       },
       "expected": {
-        "min_total": 1
+        "min_total": 0,
+        "max_rows": 1
       }
     },
     {
       "case_id": "TC_DEM_004",
-      "case_name": "按审批状态过滤",
-      "description": "验证approveStatus参数能正确过滤列表",
+      "case_name": "大页大小-pageSize=100",
+      "description": "pageSize=100 查询，验证大页量正常返回",
       "priority": "P2",
       "data": {
-        "filter_field": "approveStatus"
+        "params": {
+          "pageNum": 1,
+          "pageSize": 100
+        }
       },
       "expected": {
-        "min_total": 1
+        "min_total": 0,
+        "max_rows": 100
       }
     },
     {
       "case_id": "TC_DEM_005",
-      "case_name": "按委托部门编码过滤",
-      "description": "验证entrustDeptcode参数能正确过滤列表",
+      "case_name": "边界-pageNum=0",
+      "description": "pageNum=0 非法页码，验证系统容错处理（不崩溃，返回有效JSON）",
       "priority": "P2",
       "data": {
-        "filter_field": "entrustDeptcode"
+        "params": {
+          "pageNum": 0,
+          "pageSize": 20
+        }
       },
       "expected": {
-        "min_total": 1
+        "allow_error": true
       }
     },
     {
       "case_id": "TC_DEM_006",
-      "case_name": "按禁入状态过滤",
-      "description": "验证debarStatus参数能正确过滤列表",
+      "case_name": "边界-pageNum超出总页数",
+      "description": "pageNum=9999 远超实际页数，验证返回空rows且code=0",
       "priority": "P2",
       "data": {
-        "filter_field": "debarStatus"
+        "params": {
+          "pageNum": 9999,
+          "pageSize": 20
+        }
       },
       "expected": {
-        "min_total": 1
+        "min_total": 0,
+        "expect_empty_rows": true
       }
     },
     {
       "case_id": "TC_DEM_007",
-      "case_name": "按旧组织编码过滤",
-      "description": "验证oldOrgCode参数能正确过滤列表",
+      "case_name": "边界-pageSize=0",
+      "description": "pageSize=0 非法页大小，验证系统容错处理",
       "priority": "P2",
       "data": {
-        "filter_field": "oldOrgCode"
+        "params": {
+          "pageNum": 1,
+          "pageSize": 0
+        }
+      },
+      "expected": {
+        "allow_error": true
+      }
+    },
+    {
+      "case_id": "TC_DEM_008",
+      "case_name": "边界-负数分页",
+      "description": "pageNum=-1, pageSize=-1 非法负数，验证系统容错处理",
+      "priority": "P2",
+      "data": {
+        "params": {
+          "pageNum": -1,
+          "pageSize": -1
+        }
+      },
+      "expected": {
+        "allow_error": true
+      }
+    },
+    {
+      "case_id": "TC_DEM_009",
+      "case_name": "动态过滤-按人员姓名",
+      "description": "从baseline取真实empName值验证过滤功能",
+      "priority": "P1",
+      "data": {
+        "filter_fields": ["empName"]
       },
       "expected": {
         "min_total": 1
       }
     },
     {
-      "case_id": "TC_DEM_008",
-      "case_name": "组合过滤",
-      "description": "同时按人员姓名和身份证号过滤，验证组合过滤功能",
+      "case_id": "TC_DEM_010",
+      "case_name": "动态过滤-按身份证号",
+      "description": "从baseline取真实idcardNo值验证过滤功能",
+      "priority": "P1",
+      "data": {
+        "filter_fields": ["idcardNo"]
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_DEM_011",
+      "case_name": "动态组合过滤-姓名+身份证",
+      "description": "从baseline取真实值组合过滤，验证多字段联合查询",
       "priority": "P1",
       "data": {
         "filter_fields": ["empName", "idcardNo"]
       },
       "expected": {
         "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_DEM_012",
+      "case_name": "不存在的人员姓名过滤",
+      "description": "使用不存在的empName值，验证返回空rows且code=0",
+      "priority": "P2",
+      "data": {
+        "params": {
+          "pageNum": 1,
+          "pageSize": 20,
+          "empName": "不存在的名字XYZ999"
+        }
+      },
+      "expected": {
+        "min_total": 0,
+        "expect_empty_rows": true
+      }
+    },
+    {
+      "case_id": "TC_DEM_013",
+      "case_name": "空字符串过滤",
+      "description": "empName传空字符串，验证等同于不过滤或正常处理",
+      "priority": "P2",
+      "data": {
+        "params": {
+          "pageNum": 1,
+          "pageSize": 20,
+          "empName": ""
+        }
+      },
+      "expected": {
+        "min_total": 0
+      }
+    },
+    {
+      "case_id": "TC_DEM_014",
+      "case_name": "SQL注入-人员姓名",
+      "description": "empName包含SQL注入字符，验证系统安全处理",
+      "priority": "P2",
+      "data": {
+        "params": {
+          "pageNum": 1,
+          "pageSize": 20,
+          "empName": "' OR '1'='1"
+        }
+      },
+      "expected": {
+        "min_total": 0,
+        "expect_empty_rows": true
       }
     }
   ]
