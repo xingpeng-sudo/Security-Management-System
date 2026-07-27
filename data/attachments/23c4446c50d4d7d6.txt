@@ -1,0 +1,68 @@
+self = <modules.safety.test_supplier_list.TestSupplierList object at 0x0000029A4AF6A330>
+logged_in_api = <api.modules.safety.safety_api.SafetyAPI object at 0x0000029A4AFF7CB0>
+tc = TestCase(case_id='TC_SUP_005', case_name='边界-pageNum超出范围', description='pageNum=9999，验证返回空rows且code=0', priority='P2', data={'params': {'pageNum': 9999, 'pageSize': 20}}, expected={'min_total': 0, 'expect_empty_rows': True})
+
+    @allure.title("{tc.case_id} {tc.case_name}")
+    @allure.description("{tc.description}")
+    @load_parametrize('safety/supplier_list.json')
+    def test_supplier_list(self, logged_in_api, tc):
+        """相关方企业列表 - 参数化测试"""
+        set_severity_from_priority(tc.priority)
+        logger.info(f"执行测试用例: {tc.case_id} - {tc.case_name} [{tc.priority}]")
+    
+        filter_fields = tc.data.get('filter_fields')
+    
+        if filter_fields:
+            self._run_filter_test(logged_in_api, tc, filter_fields)
+        else:
+            params = tc.data.get('params', {})
+            if 'pageNum' not in params:
+                params['pageNum'] = 1
+            if 'pageSize' not in params:
+                params['pageSize'] = 20
+    
+            response = logged_in_api.get_supplier_list(**params)
+            attach_request_response(params, response)
+    
+>           self._assert_response(response, tc, params)
+
+testcases\modules\safety\test_supplier_list.py:43: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <modules.safety.test_supplier_list.TestSupplierList object at 0x0000029A4AF6A330>
+response = <Response [200]>
+tc = TestCase(case_id='TC_SUP_005', case_name='边界-pageNum超出范围', description='pageNum=9999，验证返回空rows且code=0', priority='P2', data={'params': {'pageNum': 9999, 'pageSize': 20}}, expected={'min_total': 0, 'expect_empty_rows': True})
+params = {'pageNum': 9999, 'pageSize': 20}
+
+    def _assert_response(self, response, tc, params):
+        """统一断言"""
+        expected = tc.expected
+    
+        AssertUtils.assert_status_ok(response)
+        AssertUtils.assert_response_time(response, max_seconds=10.0)
+    
+        if expected.get('allow_error'):
+            try:
+                resp_json = response.json()
+                logger.info(f"[Test] 边界测试响应: code={resp_json.get('code')}, total={resp_json.get('total')}")
+            except Exception:
+                pytest.fail(f"边界测试期望返回合法JSON，实际: {response.text[:500]}")
+            return
+    
+        resp_json = AssertUtils.assert_list_success(
+            response, min_total=expected.get('min_total', 0)
+        )
+    
+        max_rows = expected.get('max_rows')
+        if max_rows is not None:
+            actual_rows = len(resp_json.get('rows', []))
+            assert actual_rows <= max_rows, f"rows数量断言失败: 期望<={max_rows}, 实际={actual_rows}"
+    
+        if expected.get('expect_empty_rows'):
+            rows = resp_json.get('rows', [])
+>           assert len(rows) == 0, f"期望返回空rows，实际返回{len(rows)}条"
+E           AssertionError: 期望返回空rows，实际返回4条
+E           assert 4 == 0
+E            +  where 4 = len([{'searchValue': None, 'createBy': None, 'createTime': '2026-07-27 16:47:45', 'updateBy': None, 'updateTime': None, 'remark': None, 'params': {}, 'deleteUser': None, 'deleteTime': None, 'deleteFlag': '1', 'createUser': 'WX0686', 'updateUser': None, 'supplierId': '3516865458224242688', 'supplierName': '\u6d4b\u8bd5\u516c\u53f8_\u7535\u8bdd\u542b\u5b57\u6bcd_142080', 'businessLicenseNo': '91110000MA04423534', 'supplierNo': None, 'lnitials': None, 'legalRepresentative': '\u5468\u5175', 'blIssuingAuthority': '\u6210\u90fd\u5e02\u5e02\u573a\u76d1\u7763\u7ba1\u7406\u5c40', 'blStartDate': '2023-09-01', 'blEndDate': '2033-08-31', 'wslStartDate': None, 'wslEndDate': None, 'isLongtime': None, 'nwslStartDate': None, 'nwslEndDate': None, 'contactsName': '\u4e54\u4fca', 'contactsPhone': '13800abc000', 'schargeCertificateType': None, 'schargeName': None, 'schargePhone': None, 'schargeCertificateNo': None, 'schargeCertificateOrg': None, 'schargeStartDate': None, 'schargeEndDate': None, 'smanagerCertificateType': None, 'smanagerName': None, 'smanagerPhone': None, 'smanagerCertificateNo': None, 'smanagerCertificateOrg': None, 'smanagerStartDate': None, 'smanagerEndDate': None, 'isRevocation': '0', 'revocationUser': None, 'revocationDate': None, 'revocationReason': None, 'bussinessType': 'short_jx', 'isSelfAccess': '0', 'expireSoon': None, 'expiredDate': None, 'nowDate': None, 'expireSoonYes': False, 'expireSoonNo': False}, {'searchValue': None, 'createBy': None, 'createTime': '2026-07-27 16:47:45', 'updateBy': None, 'updateTime': None, 'remark': None, 'params': {}, 'deleteUser': None, 'deleteTime': None, 'deleteFlag': '1', 'createUser': 'WX0686', 'updateUser': None, 'supplierId': '3516865458371043328', 'supplierName': '\u6d4b\u8bd5\u516c\u53f8_\u7f3a\u534f\u529b\u79cd\u7c7b_142080', 'businessLicenseNo': '91110000MA05288952', 'supplierNo': None, 'lnitials': None, 'legalRepresentative': '\u674e\u4eae', 'blIssuingAuthority': '\u676d\u5dde\u5e02\u5e02\u573a\u76d1\u7763\u7ba1\u7406\u5c40', 'blStartDate': '2024-04-01', 'blEndDate': '2034-03-31', 'wslStartDate': None, 'wslEndDate': None, 'isLongtime': None, 'nwslStartDate': None, 'nwslEndDate': None, 'contactsName': '\u9f50\u91d1\u51e4', 'contactsPhone': '13608626021', 'schargeCertificateType': None, 'schargeName': None, 'schargePhone': None, 'schargeCertificateNo': None, 'schargeCertificateOrg': None, 'schargeStartDate': None, 'schargeEndDate': None, 'smanagerCertificateType': None, 'smanagerName': None, 'smanagerPhone': None, 'smanagerCertificateNo': None, 'smanagerCertificateOrg': None, 'smanagerStartDate': None, 'smanagerEndDate': None, 'isRevocation': '0', 'revocationUser': None, 'revocationDate': None, 'revocationReason': None, 'bussinessType': None, 'isSelfAccess': '0', 'expireSoon': None, 'expiredDate': None, 'nowDate': None, 'expireSoonYes': False, 'expireSoonNo': False}, {'searchValue': None, 'createBy': None, 'createTime': '2026-07-27 16:47:45', 'updateBy': None, 'updateTime': None, 'remark': None, 'params': {}, 'deleteUser': None, 'deleteTime': None, 'deleteFlag': '1', 'createUser': 'WX0686', 'updateUser': None, 'supplierId': '3516865458626895872', 'supplierName': '\u6d4b\u8bd5\u516c\u53f8_\u7f3a\u8054\u7cfb\u4eba_142080', 'businessLicenseNo': '91110000MA07315702', 'supplierNo': None, 'lnitials': None, 'legalRepresentative': '\u9ec4\u5f6c', 'blIssuingAuthority': '\u897f\u5b89\u5e02\u5e02\u573a\u76d1\u7763\u7ba1\u7406\u5c40', 'blStartDate': '2024-06-01', 'blEndDate': '2034-05-31', 'wslStartDate': None, 'wslEndDate': None, 'isLongtime': None, 'nwslStartDate': None, 'nwslEndDate': None, 'contactsName': None, 'contactsPhone': '13947492255', 'schargeCertificateType': None, 'schargeName': None, 'schargePhone': None, 'schargeCertificateNo': None, 'schargeCertificateOrg': None, 'schargeStartDate': None, 'schargeEndDate': None, 'smanagerCertificateType': None, 'smanagerName': None, 'smanagerPhone': None, 'smanagerCertificateNo': None, 'smanagerCertificateOrg': None, 'smanagerStartDate': None, 'smanagerEndDate': None, 'isRevocation': '0', 'revocationUser': None, 'revocationDate': None, 'revocationReason': None, 'bussinessType': 'short_jx', 'isSelfAccess': '0', 'expireSoon': None, 'expiredDate': None, 'nowDate': None, 'expireSoonYes': False, 'expireSoonNo': False}, {'searchValue': None, 'createBy': None, 'createTime': '2026-07-27 16:47:45', 'updateBy': None, 'updateTime': None, 'remark': None, 'params': {}, 'deleteUser': None, 'deleteTime': None, 'deleteFlag': '1', 'createUser': 'WX0686', 'updateUser': None, 'supplierId': '3516865458748530688', 'supplierName': "\u6d4b\u8bd5\u516c\u53f8' OR '1'='1_142080", 'businessLicenseNo': '91110000MA08714389', 'supplierNo': None, 'lnitials': None, 'legalRepresentative': '\u7f57\u6dd1\u5170', 'blIssuingAuthority': '\u9752\u5c9b\u5e02\u5e02\u573a\u76d1\u7763\u7ba1\u7406\u5c40', 'blStartDate': '2023-03-20', 'blEndDate': '2033-03-19', 'wslStartDate': None, 'wslEndDate': None, 'isLongtime': None, 'nwslStartDate': None, 'nwslEndDate': None, 'contactsName': '\u4efb\u6797', 'contactsPhone': '13033082247', 'schargeCertificateType': None, 'schargeName': None, 'schargePhone': None, 'schargeCertificateNo': None, 'schargeCertificateOrg': None, 'schargeStartDate': None, 'schargeEndDate': None, 'smanagerCertificateType': None, 'smanagerName': None, 'smanagerPhone': None, 'smanagerCertificateNo': None, 'smanagerCertificateOrg': None, 'smanagerStartDate': None, 'smanagerEndDate': None, 'isRevocation': '0', 'revocationUser': None, 'revocationDate': None, 'revocationReason': None, 'bussinessType': 'short_jx', 'isSelfAccess': '0', 'expireSoon': None, 'expiredDate': None, 'nowDate': None, 'expireSoonYes': False, 'expireSoonNo': False}])
+
+testcases\modules\safety\test_supplier_list.py:74: AssertionError

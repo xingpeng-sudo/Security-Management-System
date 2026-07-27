@@ -1,0 +1,15 @@
+[32m2026-07-27 16:48:01[0m | [1mINFO    [0m | [36mmodules.safety.test_userinfo_list[0m:[36mtest_userinfo_list[0m:[36m27[0m | [1m执行测试用例: TC_USR_004 - 组合过滤-姓名+合作单位 [P1][0m
+[32m2026-07-27 16:48:01[0m | [1mINFO    [0m | [36mapi.modules.safety.safety_api[0m:[36mget_userinfo_list[0m:[36m88[0m | [1m[API] 查询相关方人力资源库: {'pageNum': 1, 'pageSize': 20}[0m
+[32m2026-07-27 16:48:01[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m119[0m | [1m[Request] POST http://10.2.254.243/aqserver/xl/userinfo/list | Attempt: 1/3[0m
+[32m2026-07-27 16:48:01[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m129[0m | [1m[Response] 200 | Time: 0.025s[0m
+[32m2026-07-27 16:48:01[0m | [1mINFO    [0m | [36mutils.assertions[0m:[36massert_list_success[0m:[36m238[0m | [1m[Assert] 列表查询成功: total=21797, rows数量=20[0m
+[32m2026-07-27 16:48:01[0m | [1mINFO    [0m | [36mmodules.safety.test_userinfo_list[0m:[36m_run_filter_test[0m:[36m126[0m | [1m[Test] baseline: total=21797, rows=20[0m
+[32m2026-07-27 16:48:01[0m | [1mINFO    [0m | [36mmodules.safety.test_userinfo_list[0m:[36m_run_filter_test[0m:[36m135[0m | [1m[Test] 从baseline取值: userName=王基业[0m
+[32m2026-07-27 16:48:01[0m | [1mINFO    [0m | [36mmodules.safety.test_userinfo_list[0m:[36m_run_filter_test[0m:[36m135[0m | [1m[Test] 从baseline取值: cooperaDept=营口渤海起重冶金设备有限公司[0m
+[32m2026-07-27 16:48:01[0m | [1mINFO    [0m | [36mapi.modules.safety.safety_api[0m:[36mget_userinfo_list[0m:[36m88[0m | [1m[API] 查询相关方人力资源库: {'userName': '王基业', 'cooperaDept': '营口渤海起重冶金设备有限公司', 'pageNum': 1, 'pageSize': 20}[0m
+[32m2026-07-27 16:48:01[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m119[0m | [1m[Request] POST http://10.2.254.243/aqserver/xl/userinfo/list | Attempt: 1/3[0m
+[32m2026-07-27 16:48:01[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m129[0m | [1m[Response] 200 | Time: 0.097s[0m
+[32m2026-07-27 16:48:01[0m | [1mINFO    [0m | [36mutils.assertions[0m:[36massert_list_success[0m:[36m238[0m | [1m[Assert] 列表查询成功: total=1, rows数量=1[0m
+[32m2026-07-27 16:48:01[0m | [1mINFO    [0m | [36mmodules.safety.test_userinfo_list[0m:[36m_run_filter_test[0m:[36m150[0m | [1m[Test] 过滤结果对比: baseline_total=21797 -> filtered_total=1[0m
+[32m2026-07-27 16:48:01[0m | [1mINFO    [0m | [36mmodules.safety.test_userinfo_list[0m:[36m_run_filter_test[0m:[36m168[0m | [1m[Test] 过滤验证通过: 2个字段, 返回1条全部匹配[0m
+[32m2026-07-27 16:48:01[0m | [1mINFO    [0m | [36mmodules.safety.test_userinfo_list[0m:[36mtest_userinfo_list[0m:[36m46[0m | [1m测试用例执行完成: TC_USR_004 - 组合过滤-姓名+合作单位[0m

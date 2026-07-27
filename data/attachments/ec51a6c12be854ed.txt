@@ -1,7 +1,0 @@
-[32m2026-07-27 15:46:56[0m | [1mINFO    [0m | [36mmodules.safety.test_login[0m:[36mtest_login[0m:[36m27[0m | [1m执行测试用例: TC_LOGIN_007 - 记住我-false [P2][0m
-[32m2026-07-27 15:46:56[0m | [1mINFO    [0m | [36mapi.modules.safety.safety_api[0m:[36mlogin[0m:[36m50[0m | [1m[API] PC端登录: username=admin[0m
-[32m2026-07-27 15:46:56[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m119[0m | [1m[Request] POST http://10.2.254.243/aqserver/api/login | Attempt: 1/3[0m
-[32m2026-07-27 15:46:56[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m129[0m | [1m[Response] 200 | Time: 0.012s[0m
-[32m2026-07-27 15:46:56[0m | [1mINFO    [0m | [36mapi.modules.safety.safety_api[0m:[36mlogin[0m:[36m63[0m | [1m[API] 登录成功，Session Cookie已自动保存[0m
-[32m2026-07-27 15:46:56[0m | [1mINFO    [0m | [36mmodules.safety.test_login[0m:[36mtest_login[0m:[36m61[0m | [1m[Test] 登录成功: TC_LOGIN_007[0m
-[32m2026-07-27 15:46:56[0m | [1mINFO    [0m | [36mmodules.safety.test_login[0m:[36mtest_login[0m:[36m74[0m | [1m测试用例执行完成: TC_LOGIN_007 - 记住我-false[0m
