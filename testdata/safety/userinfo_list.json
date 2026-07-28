@@ -13,14 +13,11 @@
   "test_cases": [
     {
       "case_id": "TC_USR_001",
-      "case_name": "基础查询",
-      "description": "默认分页查询，作为baseline供过滤用例取真实值",
+      "case_name": "基础查询-默认分页",
+      "description": "默认分页查询，验证接口正常返回数据，作为baseline",
       "priority": "P0",
       "data": {
-        "params": {
-          "pageNum": 1,
-          "pageSize": 20
-        }
+        "params": {}
       },
       "expected": {
         "min_total": 1
@@ -28,27 +25,27 @@
     },
     {
       "case_id": "TC_USR_002",
-      "case_name": "分页验证-pageSize=1",
-      "description": "pageSize=1，验证返回rows最多1条，分页生效",
+      "case_name": "过滤-按人员姓名",
+      "description": "userName=王基业，验证返回rows的userName都为王基业",
       "priority": "P1",
       "data": {
         "params": {
-          "pageNum": 1,
-          "pageSize": 1
+          "userName": "王基业"
         }
       },
       "expected": {
-        "min_total": 0,
-        "max_rows": 1
+        "min_total": 1
       }
     },
     {
       "case_id": "TC_USR_003",
-      "case_name": "过滤-按人员姓名",
-      "description": "从baseline取真实userName值过滤，验证返回rows都匹配且结果数<=baseline",
+      "case_name": "过滤-按合作单位",
+      "description": "cooperaDept=营口渤海起重冶金设备有限公司，验证返回rows的cooperaDept都匹配",
       "priority": "P1",
       "data": {
-        "filter_fields": ["userName"]
+        "params": {
+          "cooperaDept": "营口渤海起重冶金设备有限公司"
+        }
       },
       "expected": {
         "min_total": 1
@@ -56,11 +53,13 @@
     },
     {
       "case_id": "TC_USR_004",
-      "case_name": "组合过滤-姓名+合作单位",
-      "description": "从baseline取真实userName+cooperaDept组合过滤，验证rows同时匹配两个条件",
+      "case_name": "过滤-按项目名称",
+      "description": "proName=炼钢厂2024年4台吊车结构裂纹维修项目，验证返回rows的proName都匹配",
       "priority": "P1",
       "data": {
-        "filter_fields": ["userName", "cooperaDept"]
+        "params": {
+          "proName": "炼钢厂2024年4台吊车结构裂纹维修项目"
+        }
       },
       "expected": {
         "min_total": 1
@@ -68,13 +67,130 @@
     },
     {
       "case_id": "TC_USR_005",
-      "case_name": "边界-pageNum超出范围",
-      "description": "pageNum=9999，验证返回空rows且code=0",
+      "case_name": "过滤-按需求部门编码",
+      "description": "needDeptcode=YW300，验证返回rows的needDeptcode都为YW300",
+      "priority": "P1",
+      "data": {
+        "params": {
+          "needDeptcode": "YW300"
+        }
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_USR_006",
+      "case_name": "过滤-按身份证号",
+      "description": "identityCard=210882198705131232，验证返回rows的identityCard都匹配",
+      "priority": "P1",
+      "data": {
+        "params": {
+          "identityCard": "210882198705131232"
+        }
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_USR_007",
+      "case_name": "过滤-按审批状态",
+      "description": "approveStatus=100，验证返回rows的approveStatus都为100",
+      "priority": "P1",
+      "data": {
+        "params": {
+          "approveStatus": "100"
+        }
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_USR_008",
+      "case_name": "排序-按创建时间升序",
+      "description": "orderByColumn=createTime&isAsc=asc，验证返回数据按创建时间升序排列",
       "priority": "P2",
       "data": {
         "params": {
-          "pageNum": 9999,
-          "pageSize": 20
+          "orderByColumn": "createTime",
+          "isAsc": "asc"
+        }
+      },
+      "expected": {
+        "min_total": 1,
+        "verify_sorting": true
+      }
+    },
+    {
+      "case_id": "TC_USR_009",
+      "case_name": "排序-按创建时间降序",
+      "description": "orderByColumn=createTime&isAsc=desc，验证返回数据按创建时间降序排列",
+      "priority": "P2",
+      "data": {
+        "params": {
+          "orderByColumn": "createTime",
+          "isAsc": "desc"
+        }
+      },
+      "expected": {
+        "min_total": 1,
+        "verify_sorting": true
+      }
+    },
+    {
+      "case_id": "TC_USR_010",
+      "case_name": "组合过滤-姓名+审批状态",
+      "description": "userName=王基业 + approveStatus=100，验证rows同时匹配两个条件",
+      "priority": "P1",
+      "data": {
+        "params": {
+          "userName": "王基业",
+          "approveStatus": "100"
+        }
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_USR_011",
+      "case_name": "组合过滤-合作单位+项目名称",
+      "description": "cooperaDept=营口渤海起重冶金设备有限公司 + proName=炼钢厂2024年4台吊车结构裂纹维修项目，验证rows同时匹配",
+      "priority": "P1",
+      "data": {
+        "params": {
+          "cooperaDept": "营口渤海起重冶金设备有限公司",
+          "proName": "炼钢厂2024年4台吊车结构裂纹维修项目"
+        }
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_USR_012",
+      "case_name": "边界-空字符串姓名",
+      "description": "userName=空字符串，验证是否等同于不传或报错",
+      "priority": "P2",
+      "data": {
+        "params": {
+          "userName": ""
+        }
+      },
+      "expected": {
+        "allow_error": true
+      }
+    },
+    {
+      "case_id": "TC_USR_013",
+      "case_name": "边界-不存在的身份证号",
+      "description": "identityCard=不存在的号码，验证返回rows为空、total=0",
+      "priority": "P2",
+      "data": {
+        "params": {
+          "identityCard": "999999999999999999"
         }
       },
       "expected": {

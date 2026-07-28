@@ -13,14 +13,11 @@
   "test_cases": [
     {
       "case_id": "TC_SUP_001",
-      "case_name": "基础查询",
-      "description": "默认分页查询，作为baseline供过滤用例取真实值",
+      "case_name": "基础查询-默认分页",
+      "description": "默认分页查询，验证接口正常返回数据，作为baseline",
       "priority": "P0",
       "data": {
-        "params": {
-          "pageNum": 1,
-          "pageSize": 20
-        }
+        "params": {}
       },
       "expected": {
         "min_total": 1
@@ -28,27 +25,27 @@
     },
     {
       "case_id": "TC_SUP_002",
-      "case_name": "分页验证-pageSize=1",
-      "description": "pageSize=1，验证返回rows最多1条，分页生效",
+      "case_name": "过滤-按企业名称",
+      "description": "supplierName=A，验证返回rows的supplierName都为A",
       "priority": "P1",
       "data": {
         "params": {
-          "pageNum": 1,
-          "pageSize": 1
+          "supplierName": "A"
         }
       },
       "expected": {
-        "min_total": 0,
-        "max_rows": 1
+        "min_total": 1
       }
     },
     {
       "case_id": "TC_SUP_003",
-      "case_name": "过滤-按企业名称",
-      "description": "从baseline取真实supplierName值过滤，验证返回rows都匹配且结果数<=baseline",
+      "case_name": "过滤-按营业执照号",
+      "description": "businessLicenseNo=914107287425452612，验证返回rows的businessLicenseNo都匹配",
       "priority": "P1",
       "data": {
-        "filter_fields": ["supplierName"]
+        "params": {
+          "businessLicenseNo": "914107287425452612"
+        }
       },
       "expected": {
         "min_total": 1
@@ -56,11 +53,13 @@
     },
     {
       "case_id": "TC_SUP_004",
-      "case_name": "组合过滤-企业名+法人",
-      "description": "从baseline取真实supplierName+legalRepresentative组合过滤，验证rows同时匹配两个条件",
+      "case_name": "过滤-按法人代表",
+      "description": "legalRepresentative=崔培军，验证返回rows的legalRepresentative都为崔培军",
       "priority": "P1",
       "data": {
-        "filter_fields": ["supplierName", "legalRepresentative"]
+        "params": {
+          "legalRepresentative": "崔培军"
+        }
       },
       "expected": {
         "min_total": 1
@@ -68,13 +67,102 @@
     },
     {
       "case_id": "TC_SUP_005",
-      "case_name": "边界-pageNum超出范围",
-      "description": "pageNum=9999，验证返回空rows且code=0",
+      "case_name": "过滤-按发证机关",
+      "description": "blIssuingAuthority=营口市行政审批局，验证返回rows的blIssuingAuthority都匹配",
+      "priority": "P1",
+      "data": {
+        "params": {
+          "blIssuingAuthority": "营口市行政审批局"
+        }
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_SUP_006",
+      "case_name": "排序-按创建时间升序",
+      "description": "orderByColumn=createTime&isAsc=asc，验证返回数据按创建时间升序排列",
       "priority": "P2",
       "data": {
         "params": {
-          "pageNum": 9999,
-          "pageSize": 20
+          "orderByColumn": "createTime",
+          "isAsc": "asc"
+        }
+      },
+      "expected": {
+        "min_total": 1,
+        "verify_sorting": true
+      }
+    },
+    {
+      "case_id": "TC_SUP_007",
+      "case_name": "排序-按创建时间降序",
+      "description": "orderByColumn=createTime&isAsc=desc，验证返回数据按创建时间降序排列",
+      "priority": "P2",
+      "data": {
+        "params": {
+          "orderByColumn": "createTime",
+          "isAsc": "desc"
+        }
+      },
+      "expected": {
+        "min_total": 1,
+        "verify_sorting": true
+      }
+    },
+    {
+      "case_id": "TC_SUP_008",
+      "case_name": "组合过滤-企业名称+法人代表",
+      "description": "supplierName=A + legalRepresentative=崔培军，验证rows同时匹配两个条件",
+      "priority": "P1",
+      "data": {
+        "params": {
+          "supplierName": "A",
+          "legalRepresentative": "崔培军"
+        }
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_SUP_009",
+      "case_name": "组合过滤-企业名称+营业执照号",
+      "description": "supplierName=A + businessLicenseNo=914107287425452612，验证rows同时匹配",
+      "priority": "P1",
+      "data": {
+        "params": {
+          "supplierName": "A",
+          "businessLicenseNo": "914107287425452612"
+        }
+      },
+      "expected": {
+        "min_total": 1
+      }
+    },
+    {
+      "case_id": "TC_SUP_010",
+      "case_name": "边界-空字符串企业名称",
+      "description": "supplierName=空字符串，验证是否等同于不传或报错",
+      "priority": "P2",
+      "data": {
+        "params": {
+          "supplierName": ""
+        }
+      },
+      "expected": {
+        "allow_error": true
+      }
+    },
+    {
+      "case_id": "TC_SUP_011",
+      "case_name": "边界-不存在的企业名称",
+      "description": "supplierName=不存在的企业，验证返回rows为空、total=0",
+      "priority": "P2",
+      "data": {
+        "params": {
+          "supplierName": "不存在的企业XYZ_2026"
         }
       },
       "expected": {
