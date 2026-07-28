@@ -1,0 +1,7 @@
+[32m2026-07-28 09:24:01[0m | [1mINFO    [0m | [36mmodules.safety.test_supplier_list[0m:[36mtest_supplier_list[0m:[36m34[0m | [1m执行测试用例: TC_SUP_009 - 组合过滤-企业名称+营业执照号 [P1][0m
+[32m2026-07-28 09:24:01[0m | [1mINFO    [0m | [36mapi.modules.safety.safety_api[0m:[36mget_supplier_list[0m:[36m78[0m | [1m[API] 查询相关方企业列表: {'pageNum': 1, 'pageSize': 20, 'supplierName': 'A', 'businessLicenseNo': '914107287425452612'}[0m
+[32m2026-07-28 09:24:01[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m119[0m | [1m[Request] POST http://10.2.254.243/aqserver/zr/zrSupplier/list | Attempt: 1/3[0m
+[32m2026-07-28 09:24:01[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m129[0m | [1m[Response] 200 | Time: 0.010s[0m
+[32m2026-07-28 09:24:01[0m | [1mINFO    [0m | [36mutils.assertions[0m:[36massert_list_success[0m:[36m238[0m | [1m[Assert] 列表查询成功: total=1, rows数量=1[0m
+[32m2026-07-28 09:24:01[0m | [1mINFO    [0m | [36mmodules.safety.test_supplier_list[0m:[36m_verify_filter_result[0m:[36m119[0m | [1m[Test] 验证过滤结果，过滤字段: ['supplierName', 'businessLicenseNo'][0m
+[32m2026-07-28 09:24:01[0m | [1mINFO    [0m | [36mmodules.safety.test_supplier_list[0m:[36mtest_supplier_list[0m:[36m44[0m | [1m测试用例执行完成: TC_SUP_009 - 组合过滤-企业名称+营业执照号[0m
