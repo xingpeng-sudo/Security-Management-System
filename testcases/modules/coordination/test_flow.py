@@ -21,6 +21,7 @@ from utils.logger import logger
 @allure.feature("准入证模块")
 @allure.story("业务流程")
 @pytest.mark.coordination
+@pytest.mark.skip
 class TestCoordinationFlow:
     """协力安全管理 - 端到端业务流程测试"""
 

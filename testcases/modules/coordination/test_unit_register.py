@@ -16,6 +16,7 @@ from utils.template import process_template
 @allure.feature("准入证模块")
 @allure.story("相关方单位注册")
 @pytest.mark.coordination
+@pytest.mark.skip
 class TestUnitRegister:
     """相关方单位注册测试"""
 

@@ -183,6 +183,36 @@
         "min_total": 0,
         "expect_empty_rows": true
       }
+    },
+    {
+      "case_id": "TC_DEM_013",
+      "case_name": "分页-pageSize=1翻页数据不重复",
+      "description": "pageSize=1查询第1页和第2页，验证两页rows无交集（分页核心场景，覆盖分页逻辑正确性）",
+      "priority": "P1",
+      "data": {
+        "params": {
+          "pageSize": 1
+        }
+      },
+      "expected": {
+        "min_total": 2,
+        "verify_pagination_no_overlap": true
+      }
+    },
+    {
+      "case_id": "TC_DEM_014",
+      "case_name": "过滤完整性-按身份证号",
+      "description": "idcardNo精确匹配，验证接口过滤结果与全量本地过滤一致（发现漏数据bug）",
+      "priority": "P1",
+      "data": {
+        "params": {
+          "idcardNo": "372522198104111416"
+        }
+      },
+      "expected": {
+        "min_total": 1,
+        "verify_filter_completeness": true
+      }
     }
   ]
 }

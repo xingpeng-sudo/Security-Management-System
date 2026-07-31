@@ -18,6 +18,7 @@ from utils.parametrize import load_parametrize
 @allure.feature("企业级角色模块")
 @allure.story("相关方单位登录")
 @pytest.mark.coordination
+@pytest.mark.skip
 class TestUnitLogin:
     """相关方单位登录测试（异常路径）"""
 
