@@ -1,7 +1,0 @@
-[32m2026-07-28 09:24:02[0m | [1mINFO    [0m | [36mmodules.safety.test_userinfo_list[0m:[36mtest_userinfo_list[0m:[36m44[0m | [1m执行测试用例: TC_USR_008 - 排序-按创建时间升序 [P2][0m
-[32m2026-07-28 09:24:02[0m | [1mINFO    [0m | [36mapi.modules.safety.safety_api[0m:[36mget_userinfo_list[0m:[36m88[0m | [1m[API] 查询相关方人力资源库: {'pageNum': 1, 'pageSize': 20, 'orderByColumn': 'createTime', 'isAsc': 'asc'}[0m
-[32m2026-07-28 09:24:02[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m119[0m | [1m[Request] POST http://10.2.254.243/aqserver/xl/userinfo/list | Attempt: 1/3[0m
-[32m2026-07-28 09:24:02[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m129[0m | [1m[Response] 200 | Time: 0.041s[0m
-[32m2026-07-28 09:24:02[0m | [1mINFO    [0m | [36mutils.assertions[0m:[36massert_list_success[0m:[36m238[0m | [1m[Assert] 列表查询成功: total=21797, rows数量=20[0m
-[32m2026-07-28 09:24:02[0m | [1mINFO    [0m | [36mmodules.safety.test_userinfo_list[0m:[36m_verify_sorting[0m:[36m106[0m | [1m[Test] 排序验证通过: createTime 升序, 共20条[0m
-[32m2026-07-28 09:24:02[0m | [1mINFO    [0m | [36mmodules.safety.test_userinfo_list[0m:[36mtest_userinfo_list[0m:[36m54[0m | [1m测试用例执行完成: TC_USR_008 - 排序-按创建时间升序[0m

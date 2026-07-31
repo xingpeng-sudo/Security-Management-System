@@ -1,0 +1,13 @@
+[32m2026-07-31 16:38:14[0m | [1mINFO    [0m | [36mtestcases.modules.safety._list_mixin[0m:[36m_run_list_test[0m:[36m55[0m | [1m执行测试用例: TC_DBS_013 - 分页-pageSize=1翻页数据不重复 [P1][0m
+[32m2026-07-31 16:38:14[0m | [1mINFO    [0m | [36mapi.modules.safety.safety_api[0m:[36mget_debar_supplier_list[0m:[36m98[0m | [1m[API] 查询相关方企业黑名单: {'pageNum': 1, 'pageSize': 1}[0m
+[32m2026-07-31 16:38:14[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m119[0m | [1m[Request] POST http://10.2.254.243/aqserver/zr/debarSupplier/list | Attempt: 1/3[0m
+[32m2026-07-31 16:38:14[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m129[0m | [1m[Response] 200 | Time: 0.010s[0m
+[32m2026-07-31 16:38:14[0m | [1mINFO    [0m | [36mutils.assertions[0m:[36massert_list_success[0m:[36m238[0m | [1m[Assert] 列表查询成功: total=9, rows数量=1[0m
+[32m2026-07-31 16:38:14[0m | [1mINFO    [0m | [36mapi.modules.safety.safety_api[0m:[36mget_debar_supplier_list[0m:[36m98[0m | [1m[API] 查询相关方企业黑名单: {'pageNum': 1, 'pageSize': 1}[0m
+[32m2026-07-31 16:38:14[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m119[0m | [1m[Request] POST http://10.2.254.243/aqserver/zr/debarSupplier/list | Attempt: 1/3[0m
+[32m2026-07-31 16:38:14[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m129[0m | [1m[Response] 200 | Time: 0.020s[0m
+[32m2026-07-31 16:38:14[0m | [1mINFO    [0m | [36mapi.modules.safety.safety_api[0m:[36mget_debar_supplier_list[0m:[36m98[0m | [1m[API] 查询相关方企业黑名单: {'pageNum': 2, 'pageSize': 1}[0m
+[32m2026-07-31 16:38:14[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m119[0m | [1m[Request] POST http://10.2.254.243/aqserver/zr/debarSupplier/list | Attempt: 1/3[0m
+[32m2026-07-31 16:38:14[0m | [1mINFO    [0m | [36mapi.base_api[0m:[36m_request[0m:[36m129[0m | [1m[Response] 200 | Time: 0.013s[0m
+[32m2026-07-31 16:38:14[0m | [1mINFO    [0m | [36mtestcases.modules.safety._list_mixin[0m:[36m_verify_pagination_no_overlap[0m:[36m201[0m | [1m[Test] 翻页验证通过: 第1页1条 + 第2页1条, 无重复[0m
+[32m2026-07-31 16:38:14[0m | [1mINFO    [0m | [36mtestcases.modules.safety._list_mixin[0m:[36m_run_list_test[0m:[36m76[0m | [1m测试用例执行完成: TC_DBS_013 - 分页-pageSize=1翻页数据不重复[0m

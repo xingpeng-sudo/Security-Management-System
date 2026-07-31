@@ -1,0 +1,64 @@
+self = <testcases.modules.safety.test_supplier_list.TestSupplierList object at 0x000001BCC034B850>
+logged_in_api = <api.modules.safety.safety_api.SafetyAPI object at 0x000001BCBF32A900>
+tc = TestCase(case_id='TC_SUP_013', case_name='过滤完整性-按营业执照号', description='businessLicenseNo精确匹配，验证接口过滤结果与全量本地过滤一致（发现漏数据bug...eSize': 20, 'businessLicenseNo': '914107287425452612'}}, expected={'min_total': 1, 'verify_filter_completeness': True})
+
+    @allure.title("{tc.case_id} {tc.case_name}")
+    @allure.description("{tc.description}")
+    @load_parametrize('safety/supplier_list.json')
+    def test_supplier_list(self, logged_in_api, tc):
+        """相关方企业列表 - 参数化测试"""
+>       self._run_list_test(logged_in_api, tc)
+
+testcases\modules\safety\test_supplier_list.py:34: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+testcases\modules\safety\_list_mixin.py:74: in _run_list_test
+    self._verify_filter_completeness(logged_in_api, params, tc)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <testcases.modules.safety.test_supplier_list.TestSupplierList object at 0x000001BCC034B850>
+logged_in_api = <api.modules.safety.safety_api.SafetyAPI object at 0x000001BCBF32A900>
+params = {'businessLicenseNo': '914107287425452612', 'pageNum': 1, 'pageSize': 20}
+tc = TestCase(case_id='TC_SUP_013', case_name='过滤完整性-按营业执照号', description='businessLicenseNo精确匹配，验证接口过滤结果与全量本地过滤一致（发现漏数据bug...eSize': 20, 'businessLicenseNo': '914107287425452612'}}, expected={'min_total': 1, 'verify_filter_completeness': True})
+
+    def _verify_filter_completeness(self, logged_in_api, params, tc):
+        """
+        验证过滤完整性: 接口过滤查询返回的数据, 应与全量查询后本地过滤的结果一致。
+        用于发现"应该返回但没返回"的漏数据bug。
+        """
+        filter_keys = [k for k in params.keys() if k not in NON_FILTER_KEYS]
+        if not filter_keys:
+            return
+    
+        # 全量查询(保留分页参数, 扩大pageSize拉全量)
+        all_params = {k: v for k, v in params.items() if k in NON_FILTER_KEYS}
+        all_params['pageSize'] = COMPLETENESS_FETCH_SIZE
+        all_rows = self._call_api(logged_in_api, all_params).json().get('rows', [])
+    
+        # 本地过滤
+        def _match(row):
+            for key in filter_keys:
+                expected_value = str(params[key])
+                actual_value = str(row.get(key, ''))
+                if key in EXACT_MATCH_FIELDS:
+                    if actual_value != expected_value:
+                        return False
+                else:
+                    if expected_value not in actual_value:
+                        return False
+            return True
+    
+        expected_rows = [r for r in all_rows if _match(r)]
+    
+        # 实际过滤查询返回的rows(重新调用, 确保与基础断言那次独立)
+        actual_rows = self._call_api(logged_in_api, params).json().get('rows', [])
+    
+>       assert len(expected_rows) == len(actual_rows), (
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            f"过滤完整性失败: 全量本地过滤得到{len(expected_rows)}条, "
+            f"接口过滤查询返回{len(actual_rows)}条, 可能存在漏数据或脏数据\n"
+            f"全量总数: {len(all_rows)}, 过滤字段: {filter_keys}"
+        )
+E       AssertionError: 过滤完整性失败: 全量本地过滤得到6条, 接口过滤查询返回8条, 可能存在漏数据或脏数据
+E       全量总数: 500, 过滤字段: ['businessLicenseNo']
+
+testcases\modules\safety\_list_mixin.py:237: AssertionError
