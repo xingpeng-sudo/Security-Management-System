@@ -1,0 +1,1 @@
+{"msg":"Transaction was marked for rollback only; cannot commit; nested exception is org.hibernate.TransactionException: Transaction was marked for rollback only; cannot commit","code":500}
